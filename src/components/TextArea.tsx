@@ -51,7 +51,9 @@ export const TestArea = () => {
 
     return (
         <>
-            {/* お試し用のコードエリア */}
+            {
+                /* お試し用のコードエリア */
+            }
             <Typography variant="h2" component="h1" gutterBottom sx={{ mt: 10 }} >
                 テストエリア
             </Typography>

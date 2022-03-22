@@ -13,12 +13,7 @@ export const Main = () => {
     const [ displayType, setDisplayType ] = useContext(DisplayTypeContext);
 
     const newGameClick = () => {
-      //setDisplayType( (prev:number) => prev == 0 ? prev = 1 : prev = 0);
       setDisplayType(DISPLAY_TYPES.RECORD);
-      
-      //setDisplayType(DISPLAY_TYPES.RECORD);
-      console.log("displayType:"+displayType);
-      console.log("DISPLAY_TYPES.RECORD:"+DISPLAY_TYPES.RECORD);
     };
 
     return (

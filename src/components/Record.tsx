@@ -24,10 +24,16 @@ export const Record = () => {
                 exclusive
                 onChange={handleChange}
             >
-                <ToggleButton value="1st">1st</ToggleButton>
-                <ToggleButton value="2nd">2nd</ToggleButton>
-                <ToggleButton value="Double Fault">Double Fault</ToggleButton>
+                <CustomToggleButton value="1st">1st</CustomToggleButton>
+                <CustomToggleButton value="2nd">2nd</CustomToggleButton>
+                <CustomToggleButton value="Double Fault">Double Fault</CustomToggleButton>
             </ToggleButtonGroup>
         </>
     );
 }
+
+//トグルボタンのCSSカスタマイズ
+const CustomToggleButton = styled(ToggleButton)({
+    //勝手に大文字になる設定を取り除く
+    textTransform: 'none'
+});

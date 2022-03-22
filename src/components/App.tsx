@@ -12,7 +12,6 @@ export const App: FC = () => {
   
 
   const [ displayType, setDisplayType ] = useContext(DisplayTypeContext);
-  console.log("App_displayType:"+displayType);
 
   const handleClick = () => {
     setDisplayType( (prev:number) => prev == DISPLAY_TYPES.MAIN ? prev = DISPLAY_TYPES.RECORD : prev = DISPLAY_TYPES.MAIN);

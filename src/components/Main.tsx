@@ -1,6 +1,6 @@
 import { ChangeEvent, useState, FC, useCallback, useContext } from "react";
 import { DisplayTypeProvider, DisplayTypeContext } from "./providers/DisplayTypeProvider";
-import { DISPLAY_TYPES } from "./common/constant";
+import { AppConst } from "./common/constant";
 import styled from '@emotion/styled'
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
@@ -13,7 +13,7 @@ export const Main = () => {
     const [ displayType, setDisplayType ] = useContext(DisplayTypeContext);
 
     const newGameClick = () => {
-      setDisplayType(DISPLAY_TYPES.RECORD);
+      setDisplayType(AppConst.DISPLAY_TYPES.RECORD);
     };
 
     return (

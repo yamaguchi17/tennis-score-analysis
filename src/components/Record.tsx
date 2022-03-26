@@ -18,14 +18,34 @@ type PointType = {
     pointID: number;
     serve?: string;
     serveCource?: string;
+    serveType?: string;
+    pointCategory?: string;
+    shotType?: string;
+    shotSpinType?: string;
+    shotDetail?: string;
+    shotDetailCource?: string;
 };
 
-let pointArray:PointType[] = [{pointID:0,serve:"1st",serveCource:"Wide"},{pointID:1,serve:"2nd",serveCource:"Center"}];
-
-
+//let pointArray:PointType[] = [{pointID:0,serve:"1st",serveCource:"Wide"},{pointID:1,serve:"2nd",serveCource:"Center"}];
+let pointArray:PointType[] = [{pointID:0}];
 
 
 export const Record = () => {
+
+    //point移動時に各種stateへの対象ポイントの選択をセット
+    const pointMoveSet = (target:number) => {
+        setServeItem(String(pointArray[target].serve));
+        setServeCourceItem(String(pointArray[target].serveCource));
+        setServeTypeItem(String(pointArray[target].serveType));
+        setPointCategoryItem(String(pointArray[target].pointCategory));
+        setShotTypeItem(String(pointArray[target].shotType));
+        setShotSpinTypeItem(String(pointArray[target].shotSpinType));
+        setShotDetailItem(String(pointArray[target].shotDetail));
+        setShotDetailCourceItem(String(pointArray[target].shotDetailCource));
+    };
+    
+    //出バック用　point配列の表示
+    console.log(JSON.stringify(pointArray));
 
     //確認用
     const objArrClick = ():void => {
@@ -36,15 +56,25 @@ export const Record = () => {
     //pointIDstate
     const [currentPointID, setPointID] = useState(0);
 
+    //+ボタン
     const onClickPointIDAdd = () => {
         const nextPointID = currentPointID + 1;
         if ( nextPointID > pointArray.length -1 ) {
-            pointArray.push({pointID:nextPointID,serve:"",serveCource:""});
+            pointArray.push({pointID:nextPointID});
         };
+        //各ボタンstateをポイントIDに紐づく値に更新
+        //setServeItem(typeof pointArray[nextPointID].serve !== "undefined" ? pointArray[nextPointID].serve : "");
+        pointMoveSet(nextPointID);
+        //pointIDStateを更新
         setPointID(nextPointID);
     };
+    //-ボタン
     const onClickPointIDSubtract = () => {
-        if (currentPointID > 0 )setPointID(currentPointID - 1);
+        if (currentPointID > 0 ) {
+            const prevPointID = currentPointID - 1;
+            pointMoveSet(prevPointID);
+            setPointID(prevPointID);
+        }
     };
     const onClickPointIDZero = () => {
         setPointID(0);
@@ -74,6 +104,7 @@ export const Record = () => {
         newServeSelectItem: string,
     ) => {
         setServeItem(newServeSelectItem);
+        pointArray[currentPointID].serve = newServeSelectItem;
     };
 
     //Serve Courceボタン押下処理
@@ -82,6 +113,7 @@ export const Record = () => {
         newServeCourceSelectItem: string,
     ) => {
         setServeCourceItem(newServeCourceSelectItem);
+        pointArray[currentPointID].serveCource = newServeCourceSelectItem;
     };
     
     //Serve Typeボタン押下処理
@@ -90,6 +122,7 @@ export const Record = () => {
         newServeTypeSelectItem: string,
     ) => {
         setServeTypeItem(newServeTypeSelectItem);
+        pointArray[currentPointID].serveType = newServeTypeSelectItem;
     };
 
     //Point Categoryボタン押下処理
@@ -98,6 +131,7 @@ export const Record = () => {
         newPointCategorySelectItem: string,
     ) => {
         setPointCategoryItem(newPointCategorySelectItem);
+        pointArray[currentPointID].pointCategory = newPointCategorySelectItem;
     };
     //Shot Typeボタン押下処理
     const shotTypeChange = (
@@ -105,6 +139,7 @@ export const Record = () => {
         newShotTypeSelectItem: string,
     ) => {
         setShotTypeItem(newShotTypeSelectItem);
+        pointArray[currentPointID].shotType = newShotTypeSelectItem;
     };
     //Shot Spin Typeボタン押下処理
     const shotSpinTypeChange = (
@@ -112,6 +147,7 @@ export const Record = () => {
         newShotSpinTypeSelectItem: string,
     ) => {
         setShotSpinTypeItem(newShotSpinTypeSelectItem);
+        pointArray[currentPointID].shotSpinType = newShotSpinTypeSelectItem;
     };
     //Shot Detailボタン押下処理
     const shotDetailChange = (
@@ -119,6 +155,7 @@ export const Record = () => {
         newShotDetailSelectItem: string,
     ) => {
         setShotDetailItem(newShotDetailSelectItem);
+        pointArray[currentPointID].shotDetail = newShotDetailSelectItem;
     };
     //Shot Detail Courceボタン押下処理
     const shotDetailCourceChange = (
@@ -126,6 +163,7 @@ export const Record = () => {
         newShotDetailCourceSelectItem: string,
     ) => {
         setShotDetailCourceItem(newShotDetailCourceSelectItem);
+        pointArray[currentPointID].shotDetailCource = newShotDetailCourceSelectItem;
     };    
     
 
@@ -140,6 +178,7 @@ export const Record = () => {
                 }}
             >
             <p>pointID:{currentPointID}</p>
+            <p>ArrayPointID:{pointArray[currentPointID].pointID}</p>
             <Box>
                 <IconButton aria-label="Subtract" onClick={onClickPointIDSubtract}>
                     <RemoveCircleIcon color="action"/>
@@ -153,12 +192,8 @@ export const Record = () => {
 
             </Box>
             {pointArray.map((value) => {
-                return (
-                  <p key={value.pointID}>pointID:{value.pointID}, serve:{value.serve}, serveCource:{value.serveCource}</p>
-                );
+                return <p key={"pointRecord"+value.pointID}>{ Object.entries(value).map( (val)=> val + ", ")}</p>
             })}
-            <p>currentPointID:{pointArray[currentPointID].pointID}</p>
-            <p>serveSelectItem:{serveSelectItem}</p>
             <p>Serve</p>
             <ToggleButtonGroup
                 color="primary"

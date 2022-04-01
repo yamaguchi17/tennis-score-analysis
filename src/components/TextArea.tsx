@@ -1,6 +1,5 @@
-import { ChangeEvent, useState, FC, useCallback } from "react";
+import { ChangeEvent, useState, useCallback } from "react";
 import { MemoList } from "./MemoList";
-import { ButtonAppBar } from "./Header"
 import { useMemoList } from "../fooks/useMemoList";
 import styled from '@emotion/styled'
 import TextField from '@mui/material/TextField';
@@ -9,8 +8,6 @@ import Box from "@mui/material/Box";
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import CssBaseline from '@mui/material/CssBaseline';
 
 export const TestArea = () => {
     //カスタムフックから取得
@@ -84,15 +81,15 @@ export const TestArea = () => {
     );
 }
 
-const NewGameBox = styled(Box)({
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-});
-const NewGameButton = styled(Button)({
-    display: 'block',
-    margin: '0 auto'
-});
+// const NewGameBox = styled(Box)({
+//     display: 'flex',
+//     justifyContent: 'center',
+//     alignItems: 'center',
+// });
+// const NewGameButton = styled(Button)({
+//     display: 'block',
+//     margin: '0 auto'
+// });
 
 const CustomButton = styled(Button)({
     backgroundColor: 'red'
@@ -101,11 +98,11 @@ const CustomTextField = styled(TextField)({
     backgroundColor: 'red',
     margin: '0 1em',
 });
-const STextField = styled.button`
-  border: solid 1px #ccc;
-  padding: 16px;
-  margin: 8px;
-  `;
+// const STextField = styled.button`
+//   border: solid 1px #ccc;
+//   padding: 16px;
+//   margin: 8px;
+//   `;
 
 const MyButton = styled(Button)({
     // background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',

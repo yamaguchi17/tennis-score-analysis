@@ -1,11 +1,10 @@
-import { ChangeEvent, useState, FC, useCallback, useContext } from "react";
-import { DisplayTypeProvider, DisplayTypeContext } from "./providers/DisplayTypeProvider";
-import { AppConst } from "./common/constant";
+import { useContext } from "react";
+import { DisplayTypeContext } from "./providers/DisplayTypeProvider";
+import { AppConst } from "./common/AppConst";
 import styled from '@emotion/styled'
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Container from '@mui/material/Container';
-import { ColorLens } from "@mui/icons-material";
 
 export const Main = () => {
 

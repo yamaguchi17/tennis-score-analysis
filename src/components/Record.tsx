@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { PointType } from "./common/AppTypes";
 import { useToggleBtnAction } from "../fooks/useToggleBtnAction";
 import { PointSet } from "./PointSet";
@@ -20,8 +20,8 @@ let pointArray:PointType[] = [{
         pointCountB:0,
         gameCountA:0,
         gameCountB:0,
-        setCountA:0,
-        setCountB:0,
+        setCountA:[],
+        setCountB:[],
     }
 }];
 
@@ -79,11 +79,12 @@ export const Record = () => {
     //-ボタン
     const onClickPointIDSubtract = () => {
         if (currentPointID > 0 ) {
+            pointArray.pop();
             const prevPointID = currentPointID - 1;
             pointMoveSet(pointArray[prevPointID]);
             setPointID(prevPointID);
+            pointArray[prevPointID].pointGetSide == null ? setCanMovePoint(false) : setCanMovePoint(true);
         }
-        //ポイントを戻す処理も入れる
     };
 
     //リセットボタン
@@ -96,8 +97,8 @@ export const Record = () => {
                 pointCountB: 0,
                 gameCountA: 0,
                 gameCountB: 0,
-                setCountA: 0,
-                setCountB: 0
+                setCountA: [],
+                setCountB: []
             }
         }];
     };
@@ -127,8 +128,13 @@ export const Record = () => {
                 <p>SCORE:
                     {pointArray[currentPointID].point?.pointCountA}-{pointArray[currentPointID].point?.pointCountB}
                     , {pointArray[currentPointID].point?.gameCountA}-{pointArray[currentPointID].point?.gameCountB}
-                    , {pointArray[currentPointID].point?.setCountA}-{pointArray[currentPointID].point?.setCountB}
+                    , {pointArray[currentPointID].point?.setCountA.map((value,index)=>{
+                        return String(value) + "-" + String(pointArray[currentPointID].point?.setCountB[index]) + ", ";
+                    })}
                 </p>
+
+                {/* {, {pointArray[currentPointID].point?.setCountA}-{pointArray[currentPointID].point?.setCountB}} */}
+
                 {/* {pointArray.map((value) => {
                     return <p key={"pointRecord"+value.pointID}>{ Object.entries(value).map( (val)=> val + ", ")}</p>
                 })} */}
@@ -138,8 +144,9 @@ export const Record = () => {
                     exclusive
                     onChange={pointGetSideChange}
                 >
-                    <CustomToggleButton value="sideA">sideA</CustomToggleButton>
-                    <CustomToggleButton value="sideB">sideB</CustomToggleButton>
+                    <CustomToggleButton value="sideA"><div><p>plyerA</p><p>sideA</p></div></CustomToggleButton>
+                    <CustomToggleButton value="aaa" disabled><div><p>SCORE</p><p>xx-xx</p></div></CustomToggleButton>
+                    <CustomToggleButton value="sideB"><div><p>plyerB</p><p>sideB</p></div></CustomToggleButton>
                 </ToggleButtonGroup>            
                 <p>Serve</p>
                 <ToggleButtonGroup

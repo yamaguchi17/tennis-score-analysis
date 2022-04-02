@@ -14,8 +14,8 @@ export type PointType = {
         pointCountB: number | string;
         gameCountA: number;
         gameCountB: number;        
-        setCountA: number;
-        setCountB: number;
+        setCountA: number[];
+        setCountB: number[];
     };
     pointGetSide?: string;
 };
@@ -24,5 +24,5 @@ export type PointType = {
 export type scoreType = {
     pointCount: number | string,
     gameCount: number,
-    setCount: number,
+    setCount: number[],
 }

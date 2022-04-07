@@ -1,15 +1,14 @@
-import { ChangeEvent, useState, FC, useCallback, useContext } from "react";
-import { DisplayTypeProvider, DisplayTypeContext } from "./providers/DisplayTypeProvider";
-import { DISPLAY_TYPES } from "./common/constant";
+import { useContext } from "react";
+import { DisplayTypeContext } from "./providers/DisplayTypeProvider";
+import { RuleSettings } from "../components/RuleSettings"
+import { DISPLAY_TYPES } from "./common/AppConst";
 import styled from '@emotion/styled'
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Container from '@mui/material/Container';
-import { ColorLens } from "@mui/icons-material";
 
 export const Main = () => {
 
-    //const [ displayType, setDisplayType ] = useContext(DisplayTypeContext);
     const [ displayType, setDisplayType ] = useContext(DisplayTypeContext);
 
     const newGameClick = () => {
@@ -19,10 +18,11 @@ export const Main = () => {
     return (
         <>
             <Container maxWidth="sm">
-                <NewGameBox sx={{ bgcolor: '#cfe8fc', height: '10em' }}>
+                <NewGameBox sx={{ bgcolor: 'hsl(209, 78%, 95%)', height: '6em' }}>
                     <NewGameButton onClick={newGameClick} variant="contained">New Game</NewGameButton>
                 </NewGameBox>
             </Container>
+            <RuleSettings />
         </>
 
     );

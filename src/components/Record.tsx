@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
-import { PointType } from "./common/AppTypes";
+import { useState } from "react";
+import { useContext } from "react";
+import { RuleSettingsContext } from "./providers/RuleSettingsProvider";
+import { PointType, ruleSetType } from "./common/AppTypes";
 import { useToggleBtnAction } from "../fooks/useToggleBtnAction";
 import { PointSet } from "./PointSet";
 import styled from '@emotion/styled'
@@ -11,8 +13,10 @@ import Container from "@mui/material/Container";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 
-//全ポイントの内容を保持する変数宣言
+//全ポイントの内容を保持する変数
 let pointArray:PointType[] = [{
     pointID:0,
     point:{
@@ -20,12 +24,17 @@ let pointArray:PointType[] = [{
         pointCountB:0,
         gameCountA:0,
         gameCountB:0,
-        setCountA:0,
-        setCountB:0,
+        setCountA:[],
+        setCountB:[],
+        enabledTieBreak:false,
+        deuceCountInGame:0
     }
 }];
 
 export const Record = () => {
+
+    //ルール設定の読み込み
+    const { ruleSettings, setRuleSettings } = useContext(RuleSettingsContext);
 
     //現在のpointIDstate
     const [currentPointID, setPointID] = useState(0);
@@ -64,7 +73,7 @@ export const Record = () => {
         const nextPointID = currentPointID + 1;
         //pointArrayの次の要素が空のため追加する
         if ( nextPointID > pointArray.length -1 ) {
-            const nextPoint:PointType["point"] = PointSet(pointArray[currentPointID].point, String(pointArray[currentPointID].pointGetSide));
+            const nextPoint:PointType["point"] = PointSet(pointArray[currentPointID].point, String(pointArray[currentPointID].pointGetSide), ruleSettings);
             const nextPointArrayElement:PointType = { pointID:nextPointID, point:nextPoint };
             pointArray.push(nextPointArrayElement);
         };
@@ -79,11 +88,12 @@ export const Record = () => {
     //-ボタン
     const onClickPointIDSubtract = () => {
         if (currentPointID > 0 ) {
+            pointArray.pop();
             const prevPointID = currentPointID - 1;
             pointMoveSet(pointArray[prevPointID]);
             setPointID(prevPointID);
+            pointArray[prevPointID].pointGetSide == null ? setCanMovePoint(false) : setCanMovePoint(true);
         }
-        //ポイントを戻す処理も入れる
     };
 
     //リセットボタン
@@ -96,8 +106,10 @@ export const Record = () => {
                 pointCountB: 0,
                 gameCountA: 0,
                 gameCountB: 0,
-                setCountA: 0,
-                setCountB: 0
+                setCountA: [],
+                setCountB: [],
+                enabledTieBreak: false,
+                deuceCountInGame: 0
             }
         }];
     };
@@ -108,6 +120,7 @@ export const Record = () => {
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
+                    marginBottom: '120px',
                     '& > *': { m: 1},
                     '& > p': { mt: 2},
                 }}
@@ -127,8 +140,13 @@ export const Record = () => {
                 <p>SCORE:
                     {pointArray[currentPointID].point?.pointCountA}-{pointArray[currentPointID].point?.pointCountB}
                     , {pointArray[currentPointID].point?.gameCountA}-{pointArray[currentPointID].point?.gameCountB}
-                    , {pointArray[currentPointID].point?.setCountA}-{pointArray[currentPointID].point?.setCountB}
+                    , {pointArray[currentPointID].point?.setCountA.map((value,index)=>{
+                        return String(value) + "-" + String(pointArray[currentPointID].point?.setCountB[index]) + ", ";
+                    })}
                 </p>
+
+                {/* {, {pointArray[currentPointID].point?.setCountA}-{pointArray[currentPointID].point?.setCountB}} */}
+
                 {/* {pointArray.map((value) => {
                     return <p key={"pointRecord"+value.pointID}>{ Object.entries(value).map( (val)=> val + ", ")}</p>
                 })} */}
@@ -138,8 +156,8 @@ export const Record = () => {
                     exclusive
                     onChange={pointGetSideChange}
                 >
-                    <CustomToggleButton value="sideA">sideA</CustomToggleButton>
-                    <CustomToggleButton value="sideB">sideB</CustomToggleButton>
+                    <CustomToggleButton value="sideA">plyerA</CustomToggleButton>
+                    <CustomToggleButton value="sideB">plyerB</CustomToggleButton>
                 </ToggleButtonGroup>            
                 <p>Serve</p>
                 <ToggleButtonGroup
@@ -233,55 +251,15 @@ export const Record = () => {
                     <CustomToggleButton value="Center">Center</CustomToggleButton>
                 </ToggleButtonGroup>
             </Container>
-
-            {/* 汎用処理
-            <p>Serve</p>
-            <CToggleButtonGroup
-                state={serveSelectItem}
-                setState={setServeItem}
-                elements={["1st","2nd","Double Fault"]}
-            ></CToggleButtonGroup>
-            <p>Serve Cource</p>
-            <CToggleButtonGroup 
-                state={serveCourceSelectItem} 
-                setState={setServeCourceItem} 
-                elements={["Wide","Body","Center", "Fore", "Back"]}
-            ></CToggleButtonGroup>
-            <p>Serve Type</p>
-            <CToggleButtonGroup 
-                state={serveTypeSelectItem} 
-                setState={setServeTypeItem} 
-                elements={["Flat","Slice","Spin", "TopSlice"]}
-            ></CToggleButtonGroup>            
-            <p>Point Category</p>
-            <CToggleButtonGroup 
-                state={pointCategorySelectItem} 
-                setState={setPointCategoryItem} 
-                elements={["Winner","Nice Shot","Error"]}
-            ></CToggleButtonGroup>            
-            <p>Shot Type</p>
-            <CToggleButtonGroup 
-                state={shotTypeSelectItem} 
-                setState={setShotTypeItem} 
-                elements={["Serve","Return","Stroke", "Volley", "Smash"]}
-            ></CToggleButtonGroup>            
-            <p>Shot Spin Type</p>
-            <CToggleButtonGroup 
-                state={shotSpinTypeSelectItem} 
-                setState={setShotSpinTypeItem} 
-                elements={["Spin","Slice","Flat"]}
-            ></CToggleButtonGroup>            
-            <p>Shot Detail</p>
-            <CToggleButtonGroup 
-                state={shotDetailSelectItem} 
-                setState={setShotDetailItem} 
-                elements={["Fore","Back"]}
-            ></CToggleButtonGroup>
-            <CToggleButtonGroup 
-                state={shotDetailCourceSelectItem} 
-                setState={setShotDetailCourceItem} 
-                elements={["Cross","Straight","Center"]}
-            ></CToggleButtonGroup>             */}
+            <SPointDisplayOuterArea>
+                <SPointDisplayInnerArea maxWidth="sm">
+                    <div style={{display:'flex', alignItems: 'center'}}><IconButton aria-label="nextPoint" onClick={()=>{}} sx={{padding:0 }}><ArrowLeftIcon htmlColor='white' sx={{fontSize:"55px", margin:"-20px"}}/></IconButton></div>
+                    <div style={{width:'90px', color:'hsla(92, 78%, 46%, 0.9)', fontWeight:'bold',}}><p style={{textAlign:'center',width:'100%', height:'60px', margin:0, padding:'0.5em 0.0em', overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient: 'vertical',}}>ROGER FEDERER ROGER FEDERER</p><span style={{display:'inline-block', width:'100%', height:'60px', lineHeight:'45px',textAlign:'center', fontSize:'2em'}}>30</span></div>
+                    <SGameScoreArea><SGameScoreEle>6-1</SGameScoreEle><SGameScoreEle>4-6</SGameScoreEle><SGameScoreEle>5-7</SGameScoreEle><SGameScoreEle>7-5</SGameScoreEle><SGameScoreEle>6-1</SGameScoreEle></SGameScoreArea>
+                    <div style={{width:'90px'}}><p style={{textAlign:'center',width:'100%', height:'60px', margin:0, padding:'0.5em 0.0em', overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient: 'vertical',}}>RAFAEL NADAL</p><span style={{display:'inline-block', width:'100%', height:'60px', lineHeight:'45px',textAlign:'center', fontSize:'2em'}}>30</span></div>
+                    <div style={{display:'flex', alignItems: 'center'}}><IconButton aria-label="nextPoint" onClick={()=>{}} sx={{padding:0 }}><ArrowRightIcon htmlColor='white' sx={{fontSize:"55px", margin:"-20px"}}/></IconButton></div>
+                </SPointDisplayInnerArea>
+            </SPointDisplayOuterArea>
         </>
     );
 }
@@ -292,42 +270,40 @@ const CustomToggleButton = styled(ToggleButton)({
     textTransform: 'none'
 });
 
+const SPointDisplayOuterArea = styled.div`
+    box-sizing: border-box;
+    height: 130px;
+    padding-bottom: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: hsla(209, 78%, 46%, 0.9);
+    color: white;
+`;
 
+//background-color: hsla(209, 78%, 46%, 0.0);
 
-    // //汎用トグルボタングループ型定義
-    // type CToggleButtonGroupType = {
-    //     state: string;
-    //     setState: any;
-    //     elements: string[];
-    // };
+const SPointDisplayInnerArea = styled(Container)({
+    boxSizing: 'border-box',
+    display: 'flex',
+    justifyContent: 'space-between',
+    height: '100%',
+    borderRadius: 20,
+    // '& > *': { marginLeft: '0.5em'},
+});
 
-    // //汎用トグルボタングループ
-    // const CToggleButtonGroup = (props: CToggleButtonGroupType) => {
-    //     const { state, setState, elements } = props;
-    //     console.log("汎用トグルボタングループ処理");
-    //     return (
-    //         <ToggleButtonGroup
-    //             color="primary"
-    //             value={state}
-    //             exclusive
-    //             onChange={ToggleOnChange(setState)}
-    //         >
-    //             {
-    //                 elements.map((element) => {
-    //                     return <CustomToggleButton value={element} aria-label={element} key={element}>{element}</CustomToggleButton>
-    //                 })
-    //             }
-    //         </ToggleButtonGroup>
-    //     );
-    // };
+const SGameScoreArea = styled.div`
+    width: 2.0em;
+    margin: 0 0.5em;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+`;
 
-    // //トグルボタン押下汎用処理
-    // const ToggleOnChange = (setState:any) => {
-    //     console.log("汎用ボタン処理");
-    //     return (
-    //         event: React.MouseEvent<HTMLElement>,
-    //         newSelectItem: string,
-    //     ) => {
-    //         setState(newSelectItem);
-    //     };
-    // }
+const SGameScoreEle = styled.li`
+    display: block;
+    text-align: center;
+    color: hsl(0,0%,80%);
+    &:last-child { color: white; };
+`;

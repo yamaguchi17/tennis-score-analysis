@@ -16,6 +16,8 @@ export type PointType = {
         gameCountB: number;        
         setCountA: number[];
         setCountB: number[];
+        enabledTieBreak: boolean;
+        deuceCountInGame: number;
     };
     pointGetSide?: string;
 };
@@ -25,4 +27,13 @@ export type scoreType = {
     pointCount: number | string,
     gameCount: number,
     setCount: number[],
+}
+
+export type ruleSetType = {
+    tieBreakMode: string,
+    deuceMode: string,
+    numberOfGames: string,
+    numberOfTieBreakPoint: string,
+    // enabledTieBreak: boolean,
+    // enabledSemiAdDeuce: boolean,    
 }

@@ -1,48 +1,37 @@
-import { PointType, scoreType } from "./common/AppTypes";
-import { TIE_BREAK_MODE, DEUCE_MODE } from "./common/AppConst";
+import { PointType, scoreType, ruleSetType } from "./common/AppTypes";
+import { DEUCE_MODE, TIE_BREAK_MODE } from "./common/AppConst";
 
-//設定
-let ruleSettings = {
-    enabledDeuce:true,              //デュースを適用するか
-    enabledSemiAdvantage:false,     //セミアド(1度だけデュース)を適用するか
-    enabledSemiAdDeuce:true,        //当該ゲームでデュース未実施ならtrue実施済みならfalse   ゲーム獲得時にリセット（enabledSemiAdvantageに合わせて切り替える）
-    enabledTieBreakInMatch:false,   //試合にタイブレークを適用するか falseなら特定ゲーム数先取でセット獲得
-    enabledTieBreakInGame:false,    //現在のゲームをタイブレークにするか  切替可能タイミングは0-0の時 ゲーム獲得時にリセット
-    enabled2GamesBehind:false,      //2ゲーム差で1set取得にするか
-    numberOfGames:6,                //1setのゲーム数
-    numberOfTieBreakPoint:7,        //タイブレークのポイント数
-}
+//ルール設定変数の初期化
+let tieBreakMode:string = "";
+let deuceMode:string = "";
+let numberOfGames:number = 0;
+let numberOfTieBreakPoint:number = 0;
 
-let ruleSettings2 = {
-    tieBreakMode:TIE_BREAK_MODE.TIE_BREAK,
-    deuceMode:DEUCE_MODE.DEUCE,
-    enabledTieBreak:false,
-    enabledSemiAdDeuce:false,
-    numberOfGames:6,
-    numberOfTieBreakPoint:7,
-}
+//ポイント取得側とポイント失点側の宣言
+let winnerScore: scoreType;
+let loserScore: scoreType;
 
-
-//セットを強制終了する機能もつける
+//タイブレーク判定とデュース回数の初期化
+let enabledTieBreak:boolean = false;
+let deuceCountInGame:number = 0;
 
 //ポイント反映処理
-export const PointSet = (point:PointType["point"], pointGetSide:string):PointType["point"] => {
-    //ポイント取得側とポイント失点側を設定
-    let [winnerScore, loserScore] = PointSetInit(point,pointGetSide);
+export const PointSet = (point:PointType["point"], pointGetSide:string, ruleSettings:ruleSetType):PointType["point"] => {
+
+    //ポイント取得側と失点側, ルール設定の読み込み, タイブレーク判定を設定
+    PointSetInit(point,pointGetSide,ruleSettings);
     
     //ポイントカウントアップ処理
-    AddPointCount(winnerScore,loserScore);
+    AddPointCount();
 
     //戻り値にポイント計算後（次の表示するべきポイント数）をセット
-    return PointReturnSet(winnerScore, loserScore, pointGetSide);;
+    return PointReturnSet(pointGetSide);
 }
 
 //PointSetの初期処理
-const PointSetInit = (point:PointType["point"], pointGetSide:string):scoreType[] => {
-    //ポイント取得側とポイント失点側を設定
-    let winnerScore: scoreType;
-    let loserScore: scoreType;
+const PointSetInit = (point:PointType["point"], pointGetSide:string, ruleSettings:ruleSetType):void => {
 
+    //ポイント獲得者と失点者を設定
     if ( pointGetSide === "sideA" ) {
         winnerScore = {
             pointCount: point.pointCountA,
@@ -67,106 +56,134 @@ const PointSetInit = (point:PointType["point"], pointGetSide:string):scoreType[]
         };
     }
 
-    return [winnerScore,loserScore];
+    //ルール設定を反映
+    tieBreakMode = ruleSettings.tieBreakMode;
+    deuceMode = ruleSettings.deuceMode;
+    numberOfGames = Number(ruleSettings.numberOfGames);
+    numberOfTieBreakPoint = Number(ruleSettings.numberOfTieBreakPoint);    
+
+    //タイブレーク判定
+    if(tieBreakMode === TIE_BREAK_MODE.TIE_BREAK && winnerScore.gameCount === numberOfGames && loserScore.gameCount === numberOfGames){
+        enabledTieBreak = true;
+    }
+
 }
 
 //ポイントカウントアップ処理
-const AddPointCount = (winnerScore:scoreType, loserScore:scoreType):void => {
-    // タイブレーク判定　タイブレークモードON　かつ　ゲームカウントが6-6の場合
-    // または現在のゲームがタイブレークモードになった場合
-    if((ruleSettings.enabledTieBreakInMatch && winnerScore.gameCount === ruleSettings.numberOfGames && loserScore.gameCount === ruleSettings.numberOfGames) || ruleSettings.enabledTieBreakInGame){
+const AddPointCount = ():void => {
+    //タイブレークの場合
+    if(enabledTieBreak){
+        //ポイントカウントアップ
         winnerScore.pointCount = Number(winnerScore.pointCount) + 1;
-        //タイブレーク取得のポイント数まで達したらゲーム獲得判定
-        if(winnerScore.pointCount >= ruleSettings.numberOfTieBreakPoint){
-            //セミアド
-            // if(ruleSettings.enabledSemiAdvantage === true && ruleSettings.enabledSemiAdDeuce === true && ruleSettings.numberOfTieBreakPoint - Number(loserScore.pointCount) === 1){
-            //     ruleSettings.enabledSemiAdDeuce = false;
-            // }
-            //デュースなしならそのままゲーム獲得
-            //またはデュースありなら2ポイント差でゲーム獲得
-            if(
-                (ruleSettings.enabledDeuce === false)
-                || (ruleSettings.enabledDeuce === true && (winnerScore.pointCount - Number(loserScore.pointCount)) >= 2)){
-                AddGameCount(winnerScore,loserScore);
+
+        //ゲーム獲得判定1　タイブレーク獲得ポイント数まで達する　かつ　ポイント取得者＞ポイント失点者
+        if(winnerScore.pointCount >= numberOfTieBreakPoint && winnerScore.pointCount > loserScore.pointCount){
+            //ゲーム獲得判定2
+            switch (deuceMode) {
+                //ノーアドモードの場合　そのままゲーム獲得
+                case DEUCE_MODE.NO_AD:
+                    AddGameCount();
+                    break;
+                //デュースモードの場合　2ポイント差がつけばゲーム獲得
+                case DEUCE_MODE.DEUCE:
+                    if(winnerScore.pointCount - Number(loserScore.pointCount) >= 2){
+                        AddGameCount();
+                    }
+                    break;
+                //セミアドモードの場合　2ポイント差　または　タイブレーク獲得ポイント超えでゲーム獲得
+                case DEUCE_MODE.SEMI_AD:
+                    if((winnerScore.pointCount - Number(loserScore.pointCount) >= 2) || winnerScore.pointCount > numberOfTieBreakPoint){
+                        AddGameCount();
+                    }
+                    break;
             }
         }
-
     }
+    //タイブレークでない場合
+    else{
+        //セミアドモードでのデュース実施回数をカウント
+        if(deuceMode === DEUCE_MODE.SEMI_AD && winnerScore.pointCount === 40 && loserScore.pointCount === 40){
+            deuceCountInGame++;
+        }
 
-    //ポイントが40未満の場合はそのままカウントアップ
-    if (winnerScore.pointCount < 40 && winnerScore.pointCount !== "Ad") {
-        switch (winnerScore.pointCount) {
-            case 0: winnerScore.pointCount = 15; break;
-            case 15:winnerScore.pointCount = 30; break;
-            case 30:winnerScore.pointCount = 40; break;
-            default: break;
+        //得点者のポイントが40未満の場合はそのままカウントアップ
+        if (winnerScore.pointCount < 40 && winnerScore.pointCount !== "Ad") {
+            switch (winnerScore.pointCount) {
+                case 0: winnerScore.pointCount = 15; break;
+                case 15:winnerScore.pointCount = 30; break;
+                case 30:winnerScore.pointCount = 40; break;
+                default: break;
+            }
         }
-    }
-    //ポイントが40以上の場合はデュース判定とゲーム獲得処理
-    else {
-        //デュース有の設定の場合、アドバンテージを設定。またはアドバンテージからデュースに戻す
-        if (ruleSettings.enabledDeuce && winnerScore.pointCount === 40 && loserScore.pointCount === 40) {
-            winnerScore.pointCount = "Ad";
-        } else if (ruleSettings.enabledDeuce && loserScore.pointCount === "Ad") {
-            loserScore.pointCount = 40;
+        //得点者が40で失点者が30以下ならゲーム獲得
+        else if(winnerScore.pointCount === 40 && loserScore.pointCount < 40 && loserScore.pointCount !== "Ad"){
+            AddGameCount();
         }
-        //デュースなしor上記2条件に該当しない場合ゲーム獲得処理
-        else {
-            AddGameCount(winnerScore,loserScore);
+        //デュース処理（ノーアド含む）
+        else{     
+            //失点者がアドバンテージでない　かつ　ノーアドモードまたはセミアドモードでデュース1回実施済みならゲーム獲得
+            if(loserScore.pointCount !== "Ad" && (deuceMode === DEUCE_MODE.NO_AD || (deuceMode === DEUCE_MODE.SEMI_AD && deuceCountInGame >= 2))){
+                AddGameCount();
+            }
+            //デュースモードまたはセミアドモードでデュース2回目未実施
+            else if(deuceMode === DEUCE_MODE.DEUCE || (deuceMode === DEUCE_MODE.SEMI_AD && deuceCountInGame < 2)){
+                //失点者がアドバンテージなら失点者のポイントを40に
+                if(loserScore.pointCount === "Ad"){
+                    loserScore.pointCount = 40;
+                }
+                //失点者がアドバンテージでなく獲得者が40なら獲得者のポイントをアドバンテージに
+                else if(winnerScore.pointCount === 40){
+                    winnerScore.pointCount = "Ad";
+                }
+                //獲得者のポイントがアドバンテージならゲーム獲得
+                else if(winnerScore.pointCount === "Ad"){
+                    AddGameCount();
+                }
+            }
         }
     }
 }
 
-const AddGameCount = (winnerScore:scoreType, loserScore:scoreType) => {
+//ゲームカウントアップ処理
+const AddGameCount = () => {
     //ポイントをリセットにする
     winnerScore.pointCount = 0;
     loserScore.pointCount = 0;
+    enabledTieBreak = false;
+    deuceCountInGame = 0;
+
     //ゲームカウントを1上げる
     winnerScore.gameCount++;
 
-    //セット取得となる場合の処理
-    if (
-        (winnerScore.gameCount === ruleSettings.numberOfGames && loserScore.gameCount < ruleSettings.numberOfGames - 1)
-        || (ruleSettings.enabledTieBreakInMatch === true && winnerScore.gameCount === ruleSettings.numberOfGames + 1)
-        || (ruleSettings.enabledTieBreakInMatch === false && winnerScore.gameCount === ruleSettings.numberOfGames)
-        || (ruleSettings.enabledTieBreakInGame === true)){
-        //セット取得処理
-        AddSetCount(winnerScore,loserScore);
+    //セット取得判定
+    //1セット取得のゲーム数以上になった場合で判定する
+    if (winnerScore.gameCount >= numberOfGames){
+        //1. 全モード共通で6-4など失点者側が[1セット取得のゲーム数-2以上離されている]
+        //2. タイブレークモードなら取得者のゲーム数が[1セット取得のゲーム数+1]
+        //3. 先取モードなら取得者のゲーム数が[1セット取得のゲーム数]
+        //4. 2ゲーム差モードなら[取得者のゲーム数と失点者のゲーム数が2以上離れる]
+        if((loserScore.gameCount <= numberOfGames - 2)
+        || (tieBreakMode === TIE_BREAK_MODE.TIE_BREAK && winnerScore.gameCount === numberOfGames + 1)
+        || (tieBreakMode === TIE_BREAK_MODE.GET_FIRST && winnerScore.gameCount === numberOfGames)
+        || (tieBreakMode === TIE_BREAK_MODE.TWO_GAME_BEHIND && winnerScore.gameCount - loserScore.gameCount >= 2)){
+            //セット取得処理
+            AddSetCount();
+        }
     }
-    /*
-    通常処理　5-5まで 6-5 5-6 は処理なしで進む
-    if
-    タイブレークフラグオン 6-6
-    セット取得 7-5 7-6 6-4 
-    */
 }
 
-const AddSetCount = (winnerScore:scoreType, loserScore:scoreType) => {
-    //セットカウントにゲーム数を格納
+//セットカウントアップ処理
+const AddSetCount = () => {
+    //セットカウント配列にゲーム数を格納
     winnerScore.setCount.push(winnerScore.gameCount);
     loserScore.setCount.push(loserScore.gameCount);
     //ゲームカウントをリセット
     winnerScore.gameCount = 0;
     loserScore.gameCount = 0;
-    
-    /*
-        考え直す
-        表示
-                4-6
-        15      6-4     30
-                2-3
-
-        セット取得後
-        ゲーム数を
-        winnerScore.setCount[]
-        winnerScore.setCount[4,6]
-    
-    */
 }
 
 //PointSetの返却値設定処理
-const PointReturnSet = (winnerScore:scoreType, loserScore:scoreType, pointGetSide:string):PointType["point"] => {
-    //ポイント取得側とポイント失点側を設定
+const PointReturnSet = (pointGetSide:string):PointType["point"] => {
     let nextPoint: PointType["point"];
 
     if ( pointGetSide === "sideA" ) {
@@ -176,7 +193,9 @@ const PointReturnSet = (winnerScore:scoreType, loserScore:scoreType, pointGetSid
             setCountA: winnerScore.setCount,
             pointCountB: loserScore.pointCount,
             gameCountB: loserScore.gameCount,
-            setCountB: loserScore.setCount
+            setCountB: loserScore.setCount,
+            enabledTieBreak: enabledTieBreak,
+            deuceCountInGame: deuceCountInGame
         };
     } else {
         nextPoint = {
@@ -186,6 +205,8 @@ const PointReturnSet = (winnerScore:scoreType, loserScore:scoreType, pointGetSid
             pointCountB: winnerScore.pointCount,
             gameCountB: winnerScore.gameCount,
             setCountB: winnerScore.setCount,
+            enabledTieBreak: enabledTieBreak,
+            deuceCountInGame: deuceCountInGame            
         };
     }
 

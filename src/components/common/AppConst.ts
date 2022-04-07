@@ -10,7 +10,7 @@ export const TIE_BREAK_MODE = {
     TWO_GAME_BEHIND: "2 Game Behind"
 };
 export const DEUCE_MODE = {
-    DEUCE: 0,
-    NO_AD: 1,
-    SEMI_AD: 2
+    DEUCE: "Deuce",
+    NO_AD: "No Advantage",
+    SEMI_AD: "Semi Advantage"
 };

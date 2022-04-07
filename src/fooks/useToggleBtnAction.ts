@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { PointType } from "../components/common/AppTypes";
 
-
 //トグルボタンの各処理
 export const useToggleBtnAction = (pointArray:PointType) => {
 

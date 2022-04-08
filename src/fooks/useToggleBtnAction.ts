@@ -27,14 +27,25 @@ export const useToggleBtnAction = (pointArray:PointType) => {
 
     //ポイント取得サイドボタンボタン押下処理
     const pointGetSideChange = (
-        event: React.MouseEvent<HTMLElement>,
-        newPointGetSide: string,
+        newPointGetSide: string
     ) => {
+        if(newPointGetSide === pointGetSide) newPointGetSide = "";
         setPointGetSide(newPointGetSide);
         pointArray.pointGetSide = newPointGetSide;
         //次へボタンの制御　ポイント取得サイドが選択状態ならば移行可能
-        newPointGetSide == null ? setCanMovePoint(false) : setCanMovePoint(true);
+        (newPointGetSide === null || newPointGetSide === "") ? setCanMovePoint(false) : setCanMovePoint(true);
     };
+
+    // //ポイント取得サイドボタンボタン押下処理
+    // const pointGetSideChange = (
+    //     event: React.MouseEvent<HTMLElement>,
+    //     newPointGetSide: string,
+    // ) => {
+    //     setPointGetSide(newPointGetSide);
+    //     pointArray.pointGetSide = newPointGetSide;
+    //     //次へボタンの制御　ポイント取得サイドが選択状態ならば移行可能
+    //     newPointGetSide == null ? setCanMovePoint(false) : setCanMovePoint(true);
+    // };
 
     //Serveボタン押下処理
     const serveChange = (
@@ -120,6 +131,8 @@ export const useToggleBtnAction = (pointArray:PointType) => {
         setShotDetailItem(String(pointArray.shotDetail));
         setShotDetailCourceItem(String(pointArray.shotDetailCource));
     };
+
+    console.log("レンダリングPoint");
 
     return ({
             pointGetSide,

@@ -7,6 +7,8 @@ import { TestArea } from "./TextArea";
 import { ButtonAppBar } from "./Header"
 import CssBaseline from '@mui/material/CssBaseline';
 import { Button } from "@mui/material";
+import Container from '@mui/material/Container';
+import styled from '@emotion/styled'
 
 export const App: FC = () => {
   
@@ -28,12 +30,19 @@ export const App: FC = () => {
   };
 
   return (
-    <div>
+    <>
       <CssBaseline />
       <ButtonAppBar />
       <Button onClick={handleClick}>ボタン</Button>
-      <DisplayTypeExport />
-    </div>
+      <SContainer maxWidth="sm">
+        <DisplayTypeExport />
+      </SContainer>
+    </>
   );
 }
 
+const SContainer = styled(Container)({
+  display:'flex',
+  flexDirection:'column',
+  alignItems:'center'
+});

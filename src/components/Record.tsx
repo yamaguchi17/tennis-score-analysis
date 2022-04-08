@@ -12,9 +12,13 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Container from "@mui/material/Container";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import RemoveCircOutlineleIcon from '@mui/icons-material/RemoveCircleOutline';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
+import ChevronRightSharpIcon from '@mui/icons-material/ChevronRightSharp';
+import ChevronLeftSharpIcon from '@mui/icons-material/ChevronLeftSharp';
 
 //全ポイントの内容を保持する変数
 let pointArray:PointType[] = [{
@@ -66,7 +70,7 @@ export const Record = () => {
 
     //デバッグ用　point配列の表示
     console.log(JSON.stringify(pointArray));
-
+    
     //+ボタン
     const onClickPointIDAdd = () => {
         //次のpointIDを指定
@@ -114,24 +118,23 @@ export const Record = () => {
         }];
     };
 
+    // const [colorBtnItem, setColorBtnItem] = useState(true);
+    // const colorChenge = (item:string) => {
+    //     setPointGetSideChange(item);
+    // };
+    console.log("レンダリングRecord");
     return (
         <>
-            <Container maxWidth="sm"
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    marginBottom: '120px',
-                    '& > *': { m: 1},
-                    '& > p': { mt: 2},
-                }}
-            >
-                <p>pointID:{currentPointID}</p>
+            <SOuterArea>
+                {/* <Button variant="contained" color={colorBtnItem?"inherit":"secondary"} onClick={() => colorChenge("sideA")}>カラーテスト</Button>
+                <Button variant="contained" color={colorBtnItem?"inherit":"secondary"} onClick={() => colorChenge("sideB")}>カラーテスト</Button> */}
+                {/* <p>pointID:{currentPointID}</p>
                 <Box>
                     <IconButton aria-label="Subtract" onClick={onClickPointIDSubtract} >
-                        <RemoveCircleIcon color="error"/>
+                        <RemoveCircOutlineleIcon color="action"/>
                     </IconButton>                
                     <IconButton aria-label="add" onClick={onClickPointIDAdd} disabled={!canMovePoint}>
-                        <AddCircleIcon color={canMovePoint?"primary":"action"}/>
+                        <AddCircleOutlineIcon color={canMovePoint?"primary":"action"}/>
                     </IconButton>
                     <IconButton aria-label="add" onClick={onClickPointIDZero}>
                         <RestartAltIcon color="error"/>
@@ -143,14 +146,14 @@ export const Record = () => {
                     , {pointArray[currentPointID].point?.setCountA.map((value,index)=>{
                         return String(value) + "-" + String(pointArray[currentPointID].point?.setCountB[index]) + ", ";
                     })}
-                </p>
+                </p> */}
 
                 {/* {, {pointArray[currentPointID].point?.setCountA}-{pointArray[currentPointID].point?.setCountB}} */}
 
                 {/* {pointArray.map((value) => {
                     return <p key={"pointRecord"+value.pointID}>{ Object.entries(value).map( (val)=> val + ", ")}</p>
                 })} */}
-                <ToggleButtonGroup
+                {/* <ToggleButtonGroup
                     color="primary"
                     value={pointGetSide}
                     exclusive
@@ -158,7 +161,7 @@ export const Record = () => {
                 >
                     <CustomToggleButton value="sideA">plyerA</CustomToggleButton>
                     <CustomToggleButton value="sideB">plyerB</CustomToggleButton>
-                </ToggleButtonGroup>            
+                </ToggleButtonGroup>             */}
                 <p>Serve</p>
                 <ToggleButtonGroup
                     color="primary"
@@ -250,52 +253,163 @@ export const Record = () => {
                     <CustomToggleButton value="Straight">Straight</CustomToggleButton>
                     <CustomToggleButton value="Center">Center</CustomToggleButton>
                 </ToggleButtonGroup>
-            </Container>
-            <SPointDisplayOuterArea>
-                <SPointDisplayInnerArea maxWidth="sm">
-                    <div style={{display:'flex', alignItems: 'center'}}><IconButton aria-label="nextPoint" onClick={()=>{}} sx={{padding:0 }}><ArrowLeftIcon htmlColor='white' sx={{fontSize:"55px", margin:"-20px"}}/></IconButton></div>
-                    <div style={{width:'90px', color:'hsla(92, 78%, 46%, 0.9)', fontWeight:'bold',}}><p style={{textAlign:'center',width:'100%', height:'60px', margin:0, padding:'0.5em 0.0em', overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient: 'vertical',}}>ROGER FEDERER ROGER FEDERER</p><span style={{display:'inline-block', width:'100%', height:'60px', lineHeight:'45px',textAlign:'center', fontSize:'2em'}}>30</span></div>
-                    <SGameScoreArea><SGameScoreEle>6-1</SGameScoreEle><SGameScoreEle>4-6</SGameScoreEle><SGameScoreEle>5-7</SGameScoreEle><SGameScoreEle>7-5</SGameScoreEle><SGameScoreEle>6-1</SGameScoreEle></SGameScoreArea>
-                    <div style={{width:'90px'}}><p style={{textAlign:'center',width:'100%', height:'60px', margin:0, padding:'0.5em 0.0em', overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient: 'vertical',}}>RAFAEL NADAL</p><span style={{display:'inline-block', width:'100%', height:'60px', lineHeight:'45px',textAlign:'center', fontSize:'2em'}}>30</span></div>
-                    <div style={{display:'flex', alignItems: 'center'}}><IconButton aria-label="nextPoint" onClick={()=>{}} sx={{padding:0 }}><ArrowRightIcon htmlColor='white' sx={{fontSize:"55px", margin:"-20px"}}/></IconButton></div>
-                </SPointDisplayInnerArea>
-            </SPointDisplayOuterArea>
+            </SOuterArea>
+            <SPointDisplayOuterBase>
+                <SPointDisplayInnerBase maxWidth="sm">
+                    <SMovePointButtonArea>
+                        <IconButton aria-label="prevPoint" onClick={onClickPointIDSubtract} sx={{ padding: 0 }}>
+                            <ChevronLeftSharpIcon htmlColor='white' sx={{ fontSize: "3.5rem", margin: "-1.25rem" }} />
+                        </IconButton>
+                    </SMovePointButtonArea>
+                    <SPointDisplayArea onClick={() => pointGetSideChange("sideA")} selectedPointGetSide={pointGetSide} >
+                        <SPointDisplayName>ROGER FEDERER ROGER FEDERER</SPointDisplayName>
+                        <SPointDisplay>{pointArray[currentPointID].point?.pointCountA}</SPointDisplay>
+                    </SPointDisplayArea>
+                    <SGameScoreArea>
+                        {pointArray[currentPointID].point?.setCountA.map((value,index)=>{
+                            return <SGameScoreEle>{String(value)}-{String(pointArray[currentPointID].point?.setCountB[index])}</SGameScoreEle>
+                        })}
+                        {/* <SGameScoreEle>6-1</SGameScoreEle>
+                        <SGameScoreEle>4-6</SGameScoreEle>
+                        <SGameScoreEle>5-7</SGameScoreEle>
+                        <SGameScoreEle>7-5</SGameScoreEle> */}
+                        <SGameScoreEle>{pointArray[currentPointID].point?.gameCountA}-{pointArray[currentPointID].point?.gameCountB}</SGameScoreEle>
+                    </SGameScoreArea>
+                    <SPointDisplayArea onClick={() => pointGetSideChange("sideB")} selectedPointGetSide={pointGetSide}>
+                        <SPointDisplayName>RAFAEL NADAL</SPointDisplayName>
+                        <SPointDisplay>{pointArray[currentPointID].point?.pointCountB}</SPointDisplay>
+                    </SPointDisplayArea>
+                    <SMovePointButtonArea>
+                        <IconButton aria-label="nextPoint" onClick={onClickPointIDAdd} disabled={!canMovePoint} sx={{ padding: 0 }}>
+                            <ChevronRightSharpIcon  htmlColor={canMovePoint?"white":"primary"} sx={{ fontSize: "3.5rem", margin: "-1.25rem" }} />
+                        </IconButton>
+                    </SMovePointButtonArea>
+                </SPointDisplayInnerBase>
+            </SPointDisplayOuterBase>
+            {console.log("レンダリングRecord JSX")}
         </>
     );
 }
 
-//トグルボタンのCSSカスタマイズ
+const SOuterArea = styled(Box)({
+    display: 'flex',
+    flexDirection: 'column',
+    width: '24rem',
+    maxWidth: '100%',
+    marginBottom: '9rem',
+    '& > *': { marginBottom: '0.5rem'},
+    '& > p': { margin: '1rem 0 0.5rem 0'},
+});
+
+/*
+    display: 'flex',
+    flexDirection: 'column',
+    width: '24rem',
+    marginBottom: '9rem',
+    '& > *': { marginBottom: '0.5rem'},
+    '& > p': { margin: '1rem 0 0.5rem 0'},
+
+ */
+
 const CustomToggleButton = styled(ToggleButton)({
     //勝手に大文字になる設定を取り除く
     textTransform: 'none'
 });
 
-const SPointDisplayOuterArea = styled.div`
+const SPointDisplayOuterBase = styled.div`
     box-sizing: border-box;
-    height: 130px;
-    padding-bottom: 10px;
+    height: 9rem;
+    padding: 0.6rem 0;
     position: fixed;
     bottom: 0;
     width: 100%;
-    background-color: hsla(209, 78%, 46%, 0.9);
+    background-color: hsla(209, 78%, 46%, 0.90);
     color: white;
 `;
 
-//background-color: hsla(209, 78%, 46%, 0.0);
-
-const SPointDisplayInnerArea = styled(Container)({
+const SPointDisplayInnerBase = styled(Container)({
     boxSizing: 'border-box',
     display: 'flex',
     justifyContent: 'space-between',
     height: '100%',
-    borderRadius: 20,
-    // '& > *': { marginLeft: '0.5em'},
 });
 
+const SMovePointButtonArea = styled.div`
+    display: flex;
+    align-items: center;
+    width:2rem;
+`;
+
+type PointGetSideProps = {
+    selectedPointGetSide?: string;
+  };
+
+const SPointDisplayArea = styled.div<PointGetSideProps>`
+    width: 5.5rem;
+    border-radius: 0.6rem;
+    border: 1px solid hsla(209, 78%, 46%, 0.9);
+    box-shadow: 0px 2px 0 hsla(209, 78%, 40%, 0.9), 2px 3px 6px hsla(209, 78%, 40%, 0.9);
+    user-select:none;
+    transition: all 150ms linear;
+    &:hover {
+        box-shadow: 0px 2px 0 hsla(209, 78%, 40%, 0.9), 3px 6px 6px hsla(209, 78%, 30%, 0.9);
+        cursor: pointer;
+        transition: all 250ms linear;
+    };
+    ${props => {
+        if(props?.selectedPointGetSide === "sideA"){
+            return (
+                `&:nth-of-type(2){
+                    font-weight: bold;
+                    color: hsla(92, 78%, 46%, 0.9);
+                    box-shadow: 0px 2px 0 hsla(209, 78%, 40%, 0.9), 4px 8px 6px hsla(209, 78%, 30%, 0.9);
+                };`
+            );
+        }
+        else if(props?.selectedPointGetSide === "sideB"){
+            return (
+                `&:nth-of-type(4){
+                    font-weight: bold;
+                    color: hsla(92, 78%, 46%, 0.9);
+                    box-shadow: 0px 2px 0 hsla(209, 78%, 40%, 0.9), 4px 8px 6px hsla(209, 78%, 30%, 0.9);
+                };`
+            );
+        }
+        else if(props?.selectedPointGetSide === ""){
+            return (
+                `&:nth-of-type(2),&:nth-of-type(4){
+                    font-weight: normal;
+                    color: white;
+                };`
+            );
+        }
+    }}
+`;
+
+const SPointDisplayName = styled.p`
+    text-align: center;
+    width: 100%;
+    height: 3.75rem;
+    margin: 0;
+    padding: 0.5em 0.0em;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+`;
+
+const SPointDisplay = styled.span`
+    display: inline-block;
+    width: 100%;
+    height: 3.75rem;
+    line-height: 3rem;
+    text-align: center;
+    font-size: 2em;
+`;
+
 const SGameScoreArea = styled.div`
-    width: 2.0em;
+    width: 2rem;
     margin: 0 0.5em;
-    overflow-y: auto;
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
@@ -307,3 +421,4 @@ const SGameScoreEle = styled.li`
     color: hsl(0,0%,80%);
     &:last-child { color: white; };
 `;
+

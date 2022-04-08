@@ -70,94 +70,104 @@ export const RuleSettings = () => {
     };     
 
     return (
-        <Container maxWidth="sm" >
-            <p style={{display: 'inline-flex', alignItems: 'center', marginLeft:'-0.5em'}}><SettingsIcon color={"primary"}/>Settings</p>
+        <Box sx={{ width: '22rem', display: 'flex', flexDirection: 'column' }}>
+            <p style={{ display: 'inline-flex', alignItems: 'center', margin: '1.5em 0 0.5em -0.5em' }}><SettingsIcon color={"primary"} />Settings</p>
             <SSettingsInnerDiv>
-            <p style={{marginBottom:'0.5em'}}>Tie Break Mode</p>
-            <ToggleButtonGroup
+                <SParagraph>Tie Break Mode</SParagraph>
+                <ToggleButtonGroup
                     color="primary"
                     size="small"
                     value={tieBreakMode}
                     exclusive
                     onChange={tieBreakModeChange}
                 >
-                    <CustomToggleButton value={TIE_BREAK_MODE.TIE_BREAK}>{TIE_BREAK_MODE.TIE_BREAK}</CustomToggleButton>
-                    <CustomToggleButton value={TIE_BREAK_MODE.GET_FIRST}>{TIE_BREAK_MODE.GET_FIRST}</CustomToggleButton>
-                    <CustomToggleButton value={TIE_BREAK_MODE.TWO_GAME_BEHIND}>{TIE_BREAK_MODE.TWO_GAME_BEHIND}</CustomToggleButton>
+                    <SToggleButton value={TIE_BREAK_MODE.TIE_BREAK}>{TIE_BREAK_MODE.TIE_BREAK}</SToggleButton>
+                    <SToggleButton value={TIE_BREAK_MODE.GET_FIRST}>{TIE_BREAK_MODE.GET_FIRST}</SToggleButton>
+                    <SToggleButton value={TIE_BREAK_MODE.TWO_GAME_BEHIND}>{TIE_BREAK_MODE.TWO_GAME_BEHIND}</SToggleButton>
                 </ToggleButtonGroup>
             </SSettingsInnerDiv>
             <SSettingsInnerDiv>
-            <p style={{marginBottom:'0.5em'}}>Deuce Mode</p>
-            <ToggleButtonGroup
+                <SParagraph>Deuce Mode</SParagraph>
+                <ToggleButtonGroup
                     color="primary"
                     size="small"
                     value={deuceMode}
                     exclusive
                     onChange={deuceModeChange}
                 >
-                    <CustomToggleButton value={DEUCE_MODE.DEUCE}>{DEUCE_MODE.DEUCE}</CustomToggleButton>
-                    <CustomToggleButton value={DEUCE_MODE.NO_AD}>{DEUCE_MODE.NO_AD}</CustomToggleButton>
-                    <CustomToggleButton value={DEUCE_MODE.SEMI_AD}>{DEUCE_MODE.SEMI_AD}</CustomToggleButton>
+                    <SToggleButton value={DEUCE_MODE.DEUCE}>{DEUCE_MODE.DEUCE}</SToggleButton>
+                    <SToggleButton value={DEUCE_MODE.NO_AD}>{DEUCE_MODE.NO_AD}</SToggleButton>
+                    <SToggleButton value={DEUCE_MODE.SEMI_AD}>{DEUCE_MODE.SEMI_AD}</SToggleButton>
                 </ToggleButtonGroup>
             </SSettingsInnerDiv>
             <SSettingsInnerDiv>
-            <p style={{marginBottom:'0.5em'}}>Number of Games</p>
-            <FormControl size="small" sx={{width:"80px"}}>
-                <Select
-                    id="numberOfGames"
-                    value={numberOfGames}
-                    onChange={numberOfGamesChange}
-                >
-                    <MenuItem value={"1"}>1</MenuItem>
-                    <MenuItem value={"2"}>2</MenuItem>
-                    <MenuItem value={"3"}>3</MenuItem>
-                    <MenuItem value={"4"}>4</MenuItem>
-                    <MenuItem value={"5"}>5</MenuItem>
-                    <MenuItem value={"6"}>6</MenuItem>
-                    <MenuItem value={"7"}>7</MenuItem>
-                    <MenuItem value={"8"}>8</MenuItem>
-                    <MenuItem value={"9"}>9</MenuItem>
-                    <MenuItem value={"10"}>10</MenuItem>
-                    <MenuItem value={"11"}>11</MenuItem>
-                    <MenuItem value={"12"}>12</MenuItem>
-                </Select>
-            </FormControl>
+                <SParagraph>Number of Games</SParagraph>
+                <SFormControl size="small">
+                    <Select
+                        id="numberOfGames"
+                        value={numberOfGames}
+                        onChange={numberOfGamesChange}
+                    >
+                        <MenuItem value={"1"}>1</MenuItem>
+                        <MenuItem value={"2"}>2</MenuItem>
+                        <MenuItem value={"3"}>3</MenuItem>
+                        <MenuItem value={"4"}>4</MenuItem>
+                        <MenuItem value={"5"}>5</MenuItem>
+                        <MenuItem value={"6"}>6</MenuItem>
+                        <MenuItem value={"7"}>7</MenuItem>
+                        <MenuItem value={"8"}>8</MenuItem>
+                        <MenuItem value={"9"}>9</MenuItem>
+                        <MenuItem value={"10"}>10</MenuItem>
+                        <MenuItem value={"11"}>11</MenuItem>
+                        <MenuItem value={"12"}>12</MenuItem>
+                    </Select>
+                </SFormControl>
             </SSettingsInnerDiv>
             <SSettingsInnerDiv>
-            <p style={{marginBottom:'0.5em'}}>Number of Tie Break Point</p>
-            <FormControl fullWidth size="small"  sx={{width:"80px"}}>
-                <Select
-                    id="NumberOfTieBreakPoint"
-                    value={numberOfTieBreakPoint}
-                    onChange={numberOfTieBreakPointChange}
-                >
-                    <MenuItem value={"1"}>1</MenuItem>
-                    <MenuItem value={"2"}>2</MenuItem>
-                    <MenuItem value={"3"}>3</MenuItem>
-                    <MenuItem value={"4"}>4</MenuItem>
-                    <MenuItem value={"5"}>5</MenuItem>
-                    <MenuItem value={"6"}>6</MenuItem>
-                    <MenuItem value={"7"}>7</MenuItem>
-                    <MenuItem value={"8"}>8</MenuItem>
-                    <MenuItem value={"9"}>9</MenuItem>
-                    <MenuItem value={"10"}>10</MenuItem>
-                </Select>
-            </FormControl>
+                <SParagraph>Number of Tie Break Point</SParagraph>
+                <SFormControl size="small">
+                    <Select
+                        id="NumberOfTieBreakPoint"
+                        value={numberOfTieBreakPoint}
+                        onChange={numberOfTieBreakPointChange}
+                    >
+                        <MenuItem value={"1"}>1</MenuItem>
+                        <MenuItem value={"2"}>2</MenuItem>
+                        <MenuItem value={"3"}>3</MenuItem>
+                        <MenuItem value={"4"}>4</MenuItem>
+                        <MenuItem value={"5"}>5</MenuItem>
+                        <MenuItem value={"6"}>6</MenuItem>
+                        <MenuItem value={"7"}>7</MenuItem>
+                        <MenuItem value={"8"}>8</MenuItem>
+                        <MenuItem value={"9"}>9</MenuItem>
+                        <MenuItem value={"10"}>10</MenuItem>
+                    </Select>
+                </SFormControl>
             </SSettingsInnerDiv>
-        </Container>
+        </Box>
     );
 }
 
-//トグルボタンのCSSカスタマイズ
-const CustomToggleButton = styled(ToggleButton)({
+const SToggleButton = styled(ToggleButton)({
     //勝手に大文字になる設定を取り除く
     textTransform: 'none',
-    width: "110px",
-    '&:last-child':{ width: '120px'}
+    width: "6.8rem",
+    '&:last-child':{ width: '7.5rem'}
 });
+
 const SSettingsInnerDiv = styled.div`
-    margin-bottom: 1em;
+    margin-bottom: 0.5rem;
 `;
+
+const SParagraph = styled.p`
+    margin-bottom: 0.5rem;
+`;
+
+const SFormControl = styled(FormControl)({
+    width: "5rem",
+});
+
+
 // const SSettingsInnerDiv = styled.div`
 //     margin-bottom: 1em;
 //     padding-left: 2em;
@@ -165,12 +175,12 @@ const SSettingsInnerDiv = styled.div`
 //     align-items: center;
 //     justify-content: space-between;
 // `;
-const NewGameBox = styled(Box)({
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-});
-const NewGameButton = styled(Button)({
-    display: 'block',
-    margin: '0 auto'
-});
+// const NewGameBox = styled(Box)({
+//     display: 'flex',
+//     justifyContent: 'center',
+//     alignItems: 'center',
+// });
+// const NewGameButton = styled(Button)({
+//     display: 'block',
+//     margin: '0 auto'
+// });

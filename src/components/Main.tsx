@@ -17,23 +17,25 @@ export const Main = () => {
 
     return (
         <>
-            <Container maxWidth="sm">
-                <NewGameBox sx={{ bgcolor: 'hsl(209, 78%, 95%)', height: '6em' }}>
-                    <NewGameButton onClick={newGameClick} variant="contained">New Game</NewGameButton>
-                </NewGameBox>
-            </Container>
+            <SNewGameBox>
+                    <SNewGameButton onClick={newGameClick} variant="contained">New Game</SNewGameButton>
+            </SNewGameBox>
             <RuleSettings />
         </>
 
     );
 }
 
-const NewGameBox = styled(Box)({
+const SNewGameBox = styled(Box)({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'hsl(209, 78%, 95%)',
+    width: '100%',
+    maxWidth: '28rem',
+    height: '6rem',
 });
-const NewGameButton = styled(Button)({
+const SNewGameButton = styled(Button)({
     display: 'block',
     margin: '0 auto'
 });

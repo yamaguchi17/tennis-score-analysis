@@ -12,8 +12,9 @@ const ruleSettingsInitial:ruleSetType = {
   deuceMode:DEUCE_MODE.DEUCE,
   numberOfGames: "6",
   numberOfTieBreakPoint: "7",
-  // enabledTieBreak:false,
-  // enabledSemiAdDeuce:false,  
+  playerNameA : "playerA",
+  playerNameB : "playerB",
+  selectedServer: 'player1',
 }
 
 export const RuleSettingsContext = createContext<RuleSettingsContextType>({

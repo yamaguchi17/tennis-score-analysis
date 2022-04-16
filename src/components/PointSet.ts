@@ -11,9 +11,10 @@ let numberOfTieBreakPoint:number = 0;
 let winnerScore: scoreType;
 let loserScore: scoreType;
 
-//タイブレーク判定とデュース回数の初期化
+//タイブレーク判定,デュース回数,サーバーサイド初期化
 let enabledTieBreak:boolean = false;
 let deuceCountInGame:number = 0;
+let serverSide:string = "";
 
 //ポイント反映処理
 export const PointSet = (point:PointType["point"], pointGetSide:string, ruleSettings:ruleSetType):PointType["point"] => {
@@ -36,23 +37,23 @@ const PointSetInit = (point:PointType["point"], pointGetSide:string, ruleSetting
         winnerScore = {
             pointCount: point.pointCountA,
             gameCount: point.gameCountA,
-            setCount: point.setCountA
+            setCount: [...point.setCountA]
         };
         loserScore = {
             pointCount: point?.pointCountB,
             gameCount: point?.gameCountB,
-            setCount: point?.setCountB
+            setCount: [...point?.setCountB]
         };
     } else {
         winnerScore = {
             pointCount: point?.pointCountB,
             gameCount: point?.gameCountB,
-            setCount: point?.setCountB
+            setCount: [...point?.setCountB]
         };
         loserScore = {
             pointCount: point?.pointCountA,
             gameCount: point?.gameCountA,
-            setCount: point?.setCountA
+            setCount: [...point?.setCountA]
         };
     }
 
@@ -66,6 +67,9 @@ const PointSetInit = (point:PointType["point"], pointGetSide:string, ruleSetting
     if(tieBreakMode === TIE_BREAK_MODE.TIE_BREAK && winnerScore.gameCount === numberOfGames && loserScore.gameCount === numberOfGames){
         enabledTieBreak = true;
     }
+
+    //現在のサーバーサイドを反映
+    serverSide = point.serverSide;
 
 }
 
@@ -155,6 +159,9 @@ const AddGameCount = () => {
     //ゲームカウントを1上げる
     winnerScore.gameCount++;
 
+    //サーバーサイドを変更
+    serverSide === "player1" ? serverSide = "player2" : serverSide = "player1";
+
     //セット取得判定
     //1セット取得のゲーム数以上になった場合で判定する
     if (winnerScore.gameCount >= numberOfGames){
@@ -195,7 +202,8 @@ const PointReturnSet = (pointGetSide:string):PointType["point"] => {
             gameCountB: loserScore.gameCount,
             setCountB: loserScore.setCount,
             enabledTieBreak: enabledTieBreak,
-            deuceCountInGame: deuceCountInGame
+            deuceCountInGame: deuceCountInGame,
+            serverSide: serverSide
         };
     } else {
         nextPoint = {
@@ -206,7 +214,8 @@ const PointReturnSet = (pointGetSide:string):PointType["point"] => {
             gameCountB: winnerScore.gameCount,
             setCountB: winnerScore.setCount,
             enabledTieBreak: enabledTieBreak,
-            deuceCountInGame: deuceCountInGame            
+            deuceCountInGame: deuceCountInGame,
+            serverSide: serverSide
         };
     }
 

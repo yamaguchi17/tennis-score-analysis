@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { useContext } from "react";
 import { RuleSettingsContext } from "./providers/RuleSettingsProvider";
-import { PointType, ruleSetType } from "./common/AppTypes";
+import { RuleSettings } from "../components/RuleSettings"
+import { PointType, pointDefaultData } from "./common/AppTypes";
 import { useToggleBtnAction } from "../fooks/useToggleBtnAction";
 import { PointSet } from "./PointSet";
 import styled from '@emotion/styled'
@@ -19,29 +20,28 @@ import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import ChevronRightSharpIcon from '@mui/icons-material/ChevronRightSharp';
 import ChevronLeftSharpIcon from '@mui/icons-material/ChevronLeftSharp';
+import TextField from '@mui/material/TextField';
+import {DisplayResultDialog} from "./Dialog";
+import { DisplayTypeContext } from "./providers/DisplayTypeProvider";
+import { DISPLAY_TYPES } from "./common/AppConst";
+
 
 //全ポイントの内容を保持する変数
-let pointArray:PointType[] = [{
-    pointID:0,
-    point:{
-        pointCountA:0,
-        pointCountB:0,
-        gameCountA:0,
-        gameCountB:0,
-        setCountA:[],
-        setCountB:[],
-        enabledTieBreak:false,
-        deuceCountInGame:0
-    }
-}];
+let pointArray:PointType[] = pointDefaultData();
 
 export const Record = () => {
 
-    //ルール設定の読み込み
-    const { ruleSettings, setRuleSettings } = useContext(RuleSettingsContext);
-
     //現在のpointIDstate
     const [currentPointID, setPointID] = useState(0);
+
+    //ルール設定の読み込み
+    const { ruleSettings, setRuleSettings } = useContext(RuleSettingsContext);
+    //const [ selectedServer, setSelectedServer] = useState(ruleSettings.selectedServer);
+    //pointArray[0].point.serverSide = String(ruleSettings.selectedServer);
+    useEffect(()=>{
+        pointArray[0].point.serverSide = String(ruleSettings.selectedServer);
+        console.log(pointArray[0].point.serverSide);
+    },[ruleSettings]);
 
     //トグルボタンのstateとボタン押下処理
     const {
@@ -55,6 +55,7 @@ export const Record = () => {
         shotDetailSelectItem,
         shotDetailCourceSelectItem,
         canMovePoint,
+        rallyCountItem,
         pointGetSideChange,
         serveChange,
         serveCourceChange,
@@ -65,26 +66,48 @@ export const Record = () => {
         shotDetailChange,
         shotDetailCourceChange,
         pointMoveSet,
-        setCanMovePoint
+        setCanMovePoint,
+        rallyCountAdd,
+        rallyCountSubtract,
      } = useToggleBtnAction(pointArray[currentPointID]);    
 
     //デバッグ用　point配列の表示
     console.log(JSON.stringify(pointArray));
-    
+
+    //ダイアログ
+    const [open, setOpen] = useState(false);
+    const [selectedValue, setSelectedValue] = useState("");
+    const [finishesFinalSet, setFinishesFinalSet] = useState(false);
+    const [displayType, setDisplayType] = useContext(DisplayTypeContext);
+    const dialogClose = (value: string) => {
+        setOpen(false);
+        setSelectedValue(value);
+        if (value === "Result") setDisplayType(DISPLAY_TYPES.RESULT);
+    };
+
     //+ボタン
     const onClickPointIDAdd = () => {
         //次のpointIDを指定
         const nextPointID = currentPointID + 1;
+
         //pointArrayの次の要素が空のため追加する
         if ( nextPointID > pointArray.length -1 ) {
             const nextPoint:PointType["point"] = PointSet(pointArray[currentPointID].point, String(pointArray[currentPointID].pointGetSide), ruleSettings);
             const nextPointArrayElement:PointType = { pointID:nextPointID, point:nextPoint };
             pointArray.push(nextPointArrayElement);
         };
+
+        //セット終了時にはResult画面に遷移するか確認するダイアログを表示
+        const setCountDifference:number = pointArray[nextPointID].point.setCountA.length - pointArray[currentPointID].point.setCountA.length;
+        pointArray[nextPointID].point.setCountA.length === 5 ? setFinishesFinalSet(true): setFinishesFinalSet(false);
+        setCountDifference > 0 ? setOpen(true) : setOpen(false);
+
         //各ボタンstateをポイントIDに紐づく値に更新
         pointMoveSet(pointArray[nextPointID]);
+
         //pointIDStateを更新
         setPointID(nextPointID);
+        
         //次へボタンの制御　ポイント取得サイドを選択状態でなければ移行できない
         pointArray[nextPointID].pointGetSide == null ? setCanMovePoint(false) : setCanMovePoint(true);
     };
@@ -113,7 +136,8 @@ export const Record = () => {
                 setCountA: [],
                 setCountB: [],
                 enabledTieBreak: false,
-                deuceCountInGame: 0
+                deuceCountInGame: 0,
+                serverSide: String(ruleSettings.selectedServer)
             }
         }];
     };
@@ -122,9 +146,12 @@ export const Record = () => {
     // const colorChenge = (item:string) => {
     //     setPointGetSideChange(item);
     // };
-    console.log("レンダリングRecord");
+    // console.log("レンダリングRecord");
     return (
         <>
+            <DisplayResultDialog selectedValue={selectedValue} open={open} onClose={dialogClose} finishesFinalSet={finishesFinalSet} />
+            {/* <DisplayResultDialog callesOpen={showsDialog}/> */}
+            <RuleSettings />
             <SOuterArea>
                 {/* <Button variant="contained" color={colorBtnItem?"inherit":"secondary"} onClick={() => colorChenge("sideA")}>カラーテスト</Button>
                 <Button variant="contained" color={colorBtnItem?"inherit":"secondary"} onClick={() => colorChenge("sideB")}>カラーテスト</Button> */}
@@ -179,6 +206,7 @@ export const Record = () => {
                     value={serveCourceSelectItem}
                     exclusive
                     onChange={serveCourceChange}
+                    disabled={serveSelectItem === "" || serveSelectItem === null || serveSelectItem === "Double Fault" ? true : false}
                 >
                     <CustomToggleButton value="Wide">Wide</CustomToggleButton>
                     <CustomToggleButton value="Body">Body</CustomToggleButton>
@@ -192,12 +220,25 @@ export const Record = () => {
                     value={serveTypeSelectItem}
                     exclusive
                     onChange={serveTypeChange}
+                    disabled={serveSelectItem === "" || serveSelectItem === null || serveSelectItem === "Double Fault" ? true : false}
                 >
                     <CustomToggleButton value="Flat">Flat</CustomToggleButton>
                     <CustomToggleButton value="Slice">Slice</CustomToggleButton>
                     <CustomToggleButton value="Spin">Spin</CustomToggleButton>
                     <CustomToggleButton value="TopSlice">TopSlice</CustomToggleButton>
                 </ToggleButtonGroup>
+                <p>Rally Count</p>
+                <Box>
+                    <IconButton aria-label="Subtract" onClick={rallyCountSubtract} >
+                        <RemoveCircOutlineleIcon color="primary"/>
+                    </IconButton>
+                    {rallyCountItem}
+                    {/* <TextField value={rallyCountItem} id="rallyCount" variant="standard" /> */}
+                    {/* <input type="number" value={rallyCountItem}/> */}
+                    <IconButton aria-label="add" onClick={rallyCountAdd} >
+                        <AddCircleOutlineIcon color={"primary"}/>
+                    </IconButton>
+                </Box>
                 <p>Point Category</p>
                 <ToggleButtonGroup
                     color="primary"
@@ -215,6 +256,7 @@ export const Record = () => {
                     value={shotTypeSelectItem}
                     exclusive
                     onChange={shotTypeChange}
+                    disabled={pointCategorySelectItem === "" || pointCategorySelectItem === null ? true : false}
                 >
                     <CustomToggleButton value="Serve">Serve</CustomToggleButton>
                     <CustomToggleButton value="Return">Return</CustomToggleButton>
@@ -222,36 +264,42 @@ export const Record = () => {
                     <CustomToggleButton value="Volley">Volley</CustomToggleButton>
                     <CustomToggleButton value="Smash">Smash</CustomToggleButton>
                 </ToggleButtonGroup>
-                <p>Shot Spin Type</p>
-                <ToggleButtonGroup
-                    color="primary"
-                    value={shotSpinTypeSelectItem}
-                    exclusive
-                    onChange={shotSpinTypeChange}
-                >
-                    <CustomToggleButton value="Spin">Spin</CustomToggleButton>
-                    <CustomToggleButton value="Slice">Slice</CustomToggleButton>
-                    <CustomToggleButton value="Flat">Flat</CustomToggleButton>
-                </ToggleButtonGroup>
                 <p>Shot Detail</p>
                 <ToggleButtonGroup
                     color="primary"
                     value={shotDetailSelectItem}
                     exclusive
                     onChange={shotDetailChange}
+                    disabled={pointCategorySelectItem === "" || pointCategorySelectItem === null ? true : false}
                 >
                     <CustomToggleButton value="Fore">Fore</CustomToggleButton>
                     <CustomToggleButton value="Back">Back</CustomToggleButton>
+                </ToggleButtonGroup>                
+                <p>Shot Spin Type</p>
+                <ToggleButtonGroup
+                    color="primary"
+                    value={shotSpinTypeSelectItem}
+                    exclusive
+                    onChange={shotSpinTypeChange}
+                    disabled={pointCategorySelectItem === "" || pointCategorySelectItem === null ? true : false}
+                >
+                    <CustomToggleButton value="Spin">Spin</CustomToggleButton>
+                    <CustomToggleButton value="Slice">Slice</CustomToggleButton>
+                    <CustomToggleButton value="Flat">Flat</CustomToggleButton>
                 </ToggleButtonGroup>
+                <p>Shot Course</p>
                 <ToggleButtonGroup
                     color="primary"
                     value={shotDetailCourceSelectItem}
                     exclusive
                     onChange={shotDetailCourceChange}
+                    disabled={pointCategorySelectItem === "" || pointCategorySelectItem === null ? true : false}
                 >
                     <CustomToggleButton value="Cross">Cross</CustomToggleButton>
                     <CustomToggleButton value="Straight">Straight</CustomToggleButton>
                     <CustomToggleButton value="Center">Center</CustomToggleButton>
+                    <CustomToggleButton value="Lob">Lob</CustomToggleButton>
+                    <CustomToggleButton value="Drop">Drop</CustomToggleButton>
                 </ToggleButtonGroup>
             </SOuterArea>
             <SPointDisplayOuterBase>
@@ -262,22 +310,20 @@ export const Record = () => {
                         </IconButton>
                     </SMovePointButtonArea>
                     <SPointDisplayArea onClick={() => pointGetSideChange("sideA")} selectedPointGetSide={pointGetSide} >
-                        <SPointDisplayName>ROGER FEDERER ROGER FEDERER</SPointDisplayName>
+                        <SPointDisplayName>{ruleSettings.playerNameA}</SPointDisplayName>
                         <SPointDisplay>{pointArray[currentPointID].point?.pointCountA}</SPointDisplay>
+                        {pointArray[currentPointID].point.serverSide === 'player1' && <SPointDisplayServer></SPointDisplayServer>}
                     </SPointDisplayArea>
                     <SGameScoreArea>
                         {pointArray[currentPointID].point?.setCountA.map((value,index)=>{
-                            return <SGameScoreEle>{String(value)}-{String(pointArray[currentPointID].point?.setCountB[index])}</SGameScoreEle>
+                            return <SGameScoreEle key={"setCount"+index}>{String(value)}-{String(pointArray[currentPointID].point?.setCountB[index])}</SGameScoreEle>
                         })}
-                        {/* <SGameScoreEle>6-1</SGameScoreEle>
-                        <SGameScoreEle>4-6</SGameScoreEle>
-                        <SGameScoreEle>5-7</SGameScoreEle>
-                        <SGameScoreEle>7-5</SGameScoreEle> */}
-                        <SGameScoreEle>{pointArray[currentPointID].point?.gameCountA}-{pointArray[currentPointID].point?.gameCountB}</SGameScoreEle>
+                        <SGameScoreEle key="gameCount">{pointArray[currentPointID].point?.gameCountA}-{pointArray[currentPointID].point?.gameCountB}</SGameScoreEle>
                     </SGameScoreArea>
                     <SPointDisplayArea onClick={() => pointGetSideChange("sideB")} selectedPointGetSide={pointGetSide}>
-                        <SPointDisplayName>RAFAEL NADAL</SPointDisplayName>
+                        <SPointDisplayName>{ruleSettings.playerNameB}</SPointDisplayName>
                         <SPointDisplay>{pointArray[currentPointID].point?.pointCountB}</SPointDisplay>
+                        {pointArray[currentPointID].point.serverSide === 'player2' && <SPointDisplayServer></SPointDisplayServer>}
                     </SPointDisplayArea>
                     <SMovePointButtonArea>
                         <IconButton aria-label="nextPoint" onClick={onClickPointIDAdd} disabled={!canMovePoint} sx={{ padding: 0 }}>
@@ -286,7 +332,7 @@ export const Record = () => {
                     </SMovePointButtonArea>
                 </SPointDisplayInnerBase>
             </SPointDisplayOuterBase>
-            {console.log("レンダリングRecord JSX")}
+            {/* {console.log("レンダリングRecord JSX")} */}
         </>
     );
 }
@@ -296,7 +342,7 @@ const SOuterArea = styled(Box)({
     flexDirection: 'column',
     width: '24rem',
     maxWidth: '100%',
-    marginBottom: '9rem',
+    marginBottom: '10rem',
     '& > *': { marginBottom: '0.5rem'},
     '& > p': { margin: '1rem 0 0.5rem 0'},
 });
@@ -345,12 +391,16 @@ type PointGetSideProps = {
   };
 
 const SPointDisplayArea = styled.div<PointGetSideProps>`
+    position:relative;
     width: 5.5rem;
     border-radius: 0.6rem;
     border: 1px solid hsla(209, 78%, 46%, 0.9);
     box-shadow: 0px 2px 0 hsla(209, 78%, 40%, 0.9), 2px 3px 6px hsla(209, 78%, 40%, 0.9);
     user-select:none;
     transition: all 150ms linear;
+    & > span:nth-of-type(2) {
+        background-color:white;
+    }
     &:hover {
         box-shadow: 0px 2px 0 hsla(209, 78%, 40%, 0.9), 3px 6px 6px hsla(209, 78%, 30%, 0.9);
         cursor: pointer;
@@ -363,7 +413,10 @@ const SPointDisplayArea = styled.div<PointGetSideProps>`
                     font-weight: bold;
                     color: hsla(92, 78%, 46%, 0.9);
                     box-shadow: 0px 2px 0 hsla(209, 78%, 40%, 0.9), 4px 8px 6px hsla(209, 78%, 30%, 0.9);
-                };`
+                };
+                &:nth-of-type(2) > span:nth-of-type(2) {
+                    background-color:hsla(92, 78%, 46%, 0.9);
+                }`
             );
         }
         else if(props?.selectedPointGetSide === "sideB"){
@@ -372,7 +425,10 @@ const SPointDisplayArea = styled.div<PointGetSideProps>`
                     font-weight: bold;
                     color: hsla(92, 78%, 46%, 0.9);
                     box-shadow: 0px 2px 0 hsla(209, 78%, 40%, 0.9), 4px 8px 6px hsla(209, 78%, 30%, 0.9);
-                };`
+                };
+                &&:nth-of-type(4) > span:nth-of-type(2) {
+                    background-color:hsla(92, 78%, 46%, 0.9);
+                }`
             );
         }
         else if(props?.selectedPointGetSide === ""){
@@ -380,7 +436,10 @@ const SPointDisplayArea = styled.div<PointGetSideProps>`
                 `&:nth-of-type(2),&:nth-of-type(4){
                     font-weight: normal;
                     color: white;
-                };`
+                };
+                & > span:nth-of-type(2) {
+                    background-color:white;
+                }`
             );
         }
     }}
@@ -405,6 +464,16 @@ const SPointDisplay = styled.span`
     line-height: 3rem;
     text-align: center;
     font-size: 2em;
+`;
+
+const SPointDisplayServer = styled.span`
+    position: absolute;    
+    display: inline-block;
+    border-radius: 50%;
+    width: 0.7rem;
+    height: 0.7rem;
+    left: 0.5rem;
+    top: 64%;
 `;
 
 const SGameScoreArea = styled.div`

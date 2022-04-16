@@ -24,6 +24,8 @@ export const useToggleBtnAction = (pointArray:PointType) => {
     const [shotDetailCourceSelectItem, setShotDetailCourceItem] = useState('');
     //次へボタンの制御state
     const [canMovePoint, setCanMovePoint] = useState<boolean>(false);
+    //ラリー回数カウント用state
+    const [rallyCountItem, setRallyCountItem] = useState(0);  
 
     //ポイント取得サイドボタンボタン押下処理
     const pointGetSideChange = (
@@ -52,6 +54,14 @@ export const useToggleBtnAction = (pointArray:PointType) => {
         event: React.MouseEvent<HTMLElement>,
         newServeSelectItem: string,
     ) => {
+        //非選択またはダブルフォルトの場合、サーブ関連ボタンを初期化する
+        if(newServeSelectItem === "" || newServeSelectItem === null || newServeSelectItem === "Double Fault"){
+            setServeCourceItem("");
+            setServeTypeItem("");
+            pointArray.serveCource = "";
+            pointArray.serveType = "";
+        }
+        //stateとポイント管理配列への反映
         setServeItem(newServeSelectItem);
         pointArray.serve = newServeSelectItem;
     };
@@ -79,6 +89,18 @@ export const useToggleBtnAction = (pointArray:PointType) => {
         event: React.MouseEvent<HTMLElement>,
         newPointCategorySelectItem: string,
     ) => {
+        //非選択の場合、ショット関連ボタンを初期化する
+        if(newPointCategorySelectItem === "" || newPointCategorySelectItem === null){
+            setShotTypeItem("");
+            setShotSpinTypeItem("");
+            setShotDetailItem("");
+            setShotDetailCourceItem("");
+            pointArray.shotType = "";
+            pointArray.shotSpinType = "";
+            pointArray.shotDetail = "";
+            pointArray.shotDetailCource = "";
+        }
+        //stateとポイント管理配列への反映        
         setPointCategoryItem(newPointCategorySelectItem);
         pointArray.pointCategory = newPointCategorySelectItem;
     };
@@ -117,22 +139,37 @@ export const useToggleBtnAction = (pointArray:PointType) => {
     ) => {
         setShotDetailCourceItem(newShotDetailCourceSelectItem);
         pointArray.shotDetailCource = newShotDetailCourceSelectItem;
-    }; 
+    };
+
+    //rallyCount +ボタン押下処理
+    const rallyCountAdd = () => {
+        const newRallyCountItem = rallyCountItem + 1;
+        setRallyCountItem(newRallyCountItem);
+        pointArray.rallyCount = newRallyCountItem;
+    };
+
+    //rallyCount +ボタン押下処理
+    const rallyCountSubtract = () => {
+        const newRallyCountItem = rallyCountItem - 1;
+        setRallyCountItem(newRallyCountItem);
+        pointArray.rallyCount = newRallyCountItem;
+    };
 
     //対象ポイント時の各種stateをセット
     const pointMoveSet = (pointArray:PointType):void => {
         setPointGetSide(String(pointArray.pointGetSide));
-        setServeItem(String(pointArray.serve));
+        setServeItem(pointArray.serve === undefined ? "" : String(pointArray.serve));   //未選択時のdisabled対応
         setServeCourceItem(String(pointArray.serveCource));
         setServeTypeItem(String(pointArray.serveType));
-        setPointCategoryItem(String(pointArray.pointCategory));
+        setPointCategoryItem(pointArray.pointCategory === undefined ? "" : String(pointArray.pointCategory));   //未選択時のdisabled対応
         setShotTypeItem(String(pointArray.shotType));
         setShotSpinTypeItem(String(pointArray.shotSpinType));
         setShotDetailItem(String(pointArray.shotDetail));
         setShotDetailCourceItem(String(pointArray.shotDetailCource));
+        setRallyCountItem(pointArray.rallyCount === undefined ? 0 : pointArray.rallyCount);
     };
 
-    console.log("レンダリングPoint");
+    // console.log("レンダリングPoint");
 
     return ({
             pointGetSide,
@@ -145,6 +182,7 @@ export const useToggleBtnAction = (pointArray:PointType) => {
             shotDetailSelectItem,
             shotDetailCourceSelectItem,
             canMovePoint,
+            rallyCountItem,
             pointGetSideChange,
             serveChange,
             serveCourceChange,
@@ -155,6 +193,8 @@ export const useToggleBtnAction = (pointArray:PointType) => {
             shotDetailChange,
             shotDetailCourceChange,
             pointMoveSet,
-            setCanMovePoint
+            setCanMovePoint,
+            rallyCountAdd,
+            rallyCountSubtract,
     });
 };

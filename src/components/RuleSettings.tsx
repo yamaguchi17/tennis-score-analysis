@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { RuleSettingsContext } from "./providers/RuleSettingsProvider";
 import { TIE_BREAK_MODE, DEUCE_MODE } from "./common/AppConst";
 import styled from '@emotion/styled'
@@ -12,21 +12,91 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import SettingsIcon from '@mui/icons-material/Settings';
+import TextField from '@mui/material/TextField';
+import Radio from '@mui/material/Radio';
+import { db } from "./common/db";
+import { ruleSetType } from "./common/AppTypes";
 
 export const RuleSettings = () => {
 
     //ruleSettings Context
     const { ruleSettings, setRuleSettings } = useContext(RuleSettingsContext);
 
+    //DBに保存した設定をruleSettingsに読み込む
+    useEffect(() => {
+        const rs = db.ruleSettings.get({userId: "0"})
+        .then((rs)=>{
+        //ruleSettingsテーブルにレコードが存在しなければ、初期値レコードを追加
+        if(rs === undefined){
+            const item = db.ruleSettings.add({
+            userId:"0",
+            data:{
+                tieBreakMode: ruleSettings.tieBreakMode,
+                deuceMode: ruleSettings.deuceMode,
+                numberOfGames: ruleSettings.numberOfGames,
+                numberOfTieBreakPoint: ruleSettings.numberOfTieBreakPoint,
+                playerNameA: ruleSettings.playerNameA,
+                playerNameB: ruleSettings.playerNameB,
+                selectedServer: ruleSettings.selectedServer,                
+            }
+            });
+        }
+        //globalStateテーブルにレコードが存在すれば、レコードをstateに反映
+        else {
+            const newRuleSettings:ruleSetType = {
+                tieBreakMode: rs.data.tieBreakMode,
+                deuceMode: rs.data.deuceMode,
+                numberOfGames: rs.data.numberOfGames,
+                numberOfTieBreakPoint: rs.data.numberOfTieBreakPoint,
+                playerNameA: rs.data.playerNameA,
+                playerNameB: rs.data.playerNameB,
+                selectedServer: rs.data.selectedServer,
+            }
+            setRuleSettings(newRuleSettings);
+        }
+        })
+        .catch((error)=>{
+            console.error("error" + error);
+        });
+    },[]);
+
     //ruleSettings State
     const [ tieBreakMode, setTieBreakMode] = useState(ruleSettings.tieBreakMode);
     const [ deuceMode, setDeuceMode] = useState(ruleSettings.deuceMode);
     const [ numberOfGames, setNumberOfGames] = useState(ruleSettings.numberOfGames);
     const [ numberOfTieBreakPoint, setNumberOfTieBreakPoint] = useState(ruleSettings.numberOfTieBreakPoint);
-    //const [ enabledTieBreak, setEnabledTieBreak] = useState(ruleSettings.enabledTieBreak);
-    //const [ enabledSemiAdDeuce, setEnabledSemiAdDeuce] = useState(ruleSettings.enabledSemiAdDeuce);
+    const [ playerNameA, setPlayerNameA] = useState(ruleSettings.playerNameA);
+    const [ playerNameB, setPlayerNameB] = useState(ruleSettings.playerNameB);
+    const [ selectedServer, setSelectedServer] = useState(ruleSettings.selectedServer);
 
-    console.log(ruleSettings);
+    // console.log(ruleSettings);
+
+    //プレイヤー1の名前設定処理
+    const playerNameAChange = (event:React.ChangeEvent<HTMLInputElement>) => {
+        setPlayerNameA(event.target.value);
+        const newRuleSettings = ruleSettings;
+        newRuleSettings.playerNameA = event.target.value;
+        setRuleSettings(newRuleSettings);
+        db.ruleSettings.update("0", {data: newRuleSettings});
+    };
+
+    //プレイヤー2の名前設定処理
+    const playerNameBChange = (event:React.ChangeEvent<HTMLInputElement>) => {
+        setPlayerNameB(event.target.value);
+        const newRuleSettings = ruleSettings;
+        newRuleSettings.playerNameB = event.target.value;
+        setRuleSettings(newRuleSettings);
+        db.ruleSettings.update("0", {data: newRuleSettings});
+    };
+
+    //サーバー設定処理
+    const selectedServerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setSelectedServer(event.target.value);
+      const newRuleSettings = ruleSettings;
+      newRuleSettings.selectedServer = event.target.value;
+      setRuleSettings(newRuleSettings);
+      db.ruleSettings.update("0", {data: newRuleSettings});
+    };
 
     //タイブレークモードボタン押下処理
     const tieBreakModeChange = (
@@ -37,6 +107,7 @@ export const RuleSettings = () => {
             const newRuleSettings = ruleSettings;
             newRuleSettings.tieBreakMode = newItem;
             setRuleSettings(newRuleSettings);
+            db.ruleSettings.update("0", {data: newRuleSettings});
     };
 
     //デュースモードボタン押下処理
@@ -47,8 +118,8 @@ export const RuleSettings = () => {
         setDeuceMode(newItem);
         const newRuleSettings = ruleSettings;
         newRuleSettings.deuceMode = newItem;
-        // if(newItem === DEUCE_MODE.SEMI_AD) newRuleSettings.enabledSemiAdDeuce = true;
         setRuleSettings(newRuleSettings);
+        db.ruleSettings.update("0", {data: newRuleSettings});
     };
 
     //ゲーム数セレクト処理
@@ -57,7 +128,8 @@ export const RuleSettings = () => {
         setNumberOfGames(newItem);
         const newRuleSettings = ruleSettings;
         newRuleSettings.numberOfGames = newItem;
-        setRuleSettings(newRuleSettings);        
+        setRuleSettings(newRuleSettings);
+        db.ruleSettings.update("0", {data: newRuleSettings});   
     };
 
     //タイブレークポイント数セレクト処理
@@ -66,12 +138,36 @@ export const RuleSettings = () => {
         setNumberOfTieBreakPoint(newItem);
         const newRuleSettings = ruleSettings;
         newRuleSettings.numberOfTieBreakPoint = newItem;
-        setRuleSettings(newRuleSettings);           
-    };     
+        setRuleSettings(newRuleSettings);
+        db.ruleSettings.update("0", {data: newRuleSettings});         
+    };  
 
     return (
         <Box sx={{ width: '22rem', display: 'flex', flexDirection: 'column' }}>
             <p style={{ display: 'inline-flex', alignItems: 'center', margin: '1.5em 0 0.5em -0.5em' }}><SettingsIcon color={"primary"} />Settings</p>
+            <SSettingsInnerDiv>
+                <SParagraph>Player Name / Server</SParagraph>
+                <div style={{display:"flex"}}>
+                    <STextField id="playerNameA" label="Player1 Name" value={playerNameA} variant="outlined" onChange={playerNameAChange} size="small"  inputProps={{ maxLength: 20}}/>
+                    <Radio
+                        checked={selectedServer === 'player1'}
+                        onChange={selectedServerChange}
+                        value="player1"
+                        name="select-sever"
+                        inputProps={{ 'aria-label': 'Player1' }}
+                    />
+                </div>
+                <div style={{display:"flex"}}>
+                    <STextField id="playerNameB" label="Player2 Name" value={playerNameB} variant="outlined" onChange={playerNameBChange} size="small" inputProps={{ maxLength: 20}}/>
+                    <Radio
+                        checked={selectedServer === 'player2'}
+                        onChange={selectedServerChange}
+                        value="player2"
+                        name="select-sever"
+                        inputProps={{ 'aria-label': 'Player2' }}
+                    />                        
+                </div>
+            </SSettingsInnerDiv>
             <SSettingsInnerDiv>
                 <SParagraph>Tie Break Mode</SParagraph>
                 <ToggleButtonGroup
@@ -148,16 +244,20 @@ export const RuleSettings = () => {
     );
 }
 
+const SSettingsInnerDiv = styled.div`
+    margin-bottom: 0.5rem;
+`;
+
+const STextField = styled(TextField)({
+    margin: '1rem 0 0 0'
+});
+
 const SToggleButton = styled(ToggleButton)({
     //勝手に大文字になる設定を取り除く
     textTransform: 'none',
     width: "6.8rem",
     '&:last-child':{ width: '7.5rem'}
 });
-
-const SSettingsInnerDiv = styled.div`
-    margin-bottom: 0.5rem;
-`;
 
 const SParagraph = styled.p`
     margin-bottom: 0.5rem;

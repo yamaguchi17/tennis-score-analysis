@@ -69,8 +69,6 @@ export const RuleSettings = () => {
     const [ playerNameB, setPlayerNameB] = useState(ruleSettings.playerNameB);
     const [ selectedServer, setSelectedServer] = useState(ruleSettings.selectedServer);
 
-    // console.log(ruleSettings);
-
     //プレイヤー1の名前設定処理
     const playerNameAChange = (event:React.ChangeEvent<HTMLInputElement>) => {
         setPlayerNameA(event.target.value);

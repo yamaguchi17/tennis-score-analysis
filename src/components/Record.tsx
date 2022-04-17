@@ -37,11 +37,12 @@ export const Record = () => {
     //ルール設定の読み込み
     const { ruleSettings, setRuleSettings } = useContext(RuleSettingsContext);
     //const [ selectedServer, setSelectedServer] = useState(ruleSettings.selectedServer);
-    //pointArray[0].point.serverSide = String(ruleSettings.selectedServer);
-    useEffect(()=>{
-        pointArray[0].point.serverSide = String(ruleSettings.selectedServer);
-        console.log(pointArray[0].point.serverSide);
-    },[ruleSettings]);
+    pointArray[0].point.serverSide = String(ruleSettings.selectedServer);
+
+    // useEffect(()=>{
+    //     pointArray[0].point.serverSide = String(ruleSettings.selectedServer);
+    //     console.log(pointArray[0].point.serverSide);
+    // },[ruleSettings.selectedServer]);
 
     //トグルボタンのstateとボタン押下処理
     const {

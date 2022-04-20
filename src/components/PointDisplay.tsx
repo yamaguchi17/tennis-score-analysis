@@ -26,6 +26,8 @@ export const PointDisplay = () => {
     const { ruleSettings, setRuleSettings } = useContext(RuleSettingsContext);
 
     const matchData = useLiveQuery(() => db.matchData.get({id:globalState.recodingMatchId}),[]);
+
+    const [ pointData, setPointData ] = useState<PointType>(pointDefaultData()[0]);
     
     //DBから読み込み
     //const globalState = useLiveQuery(() => db.globalState.get({userId:"0"}) ,[]);
@@ -50,14 +52,14 @@ export const PointDisplay = () => {
     //現在表示されるポイント内容
     //const [ point, setPoint ] = useState(pointDefaultData()[0].point);
 
-    //DBからcurrentPointIDを取得
+    //DBからcurrentPointId,現在のポイント内容を取得
     useLayoutEffect(() => {
-        console.log("レンダリング");
         setIsCompleted(false);
         db.matchData.get({ id: globalState.recodingMatchId })
         .then((md) => {
             if (md !== undefined) {
                 setPointID(md.currentPointId);
+                setPointData(md.data[md.currentPointId]);
             }
             setIsCompleted(true);
         })
@@ -66,8 +68,9 @@ export const PointDisplay = () => {
         })
     }, []);
 
-    //matchDataとcurrentPointIDがDBから読み込まれるまで処理を止める
-    if(!matchData || !isCompleted ) return null;
+    //DBから読み込まれるまで処理を止める
+    if(!matchData || !isCompleted ) return null;    //matchData削除後修正
+
 
     //point Stateにコピー
     //setPoint(matchData.data[currentPointID].point);
@@ -95,57 +98,66 @@ export const PointDisplay = () => {
 
     //+ボタン
     const onClickPointIDAdd = async () => {
-        console.log(matchData);
         //次のpointIDを指定
         const nextPointID = currentPointID + 1;
 
-        if(matchData !== undefined){
-            //ポイント計算を行い次の要素を追加する
-            if ( nextPointID > matchData?.data.length -1 ) {
-                const nextPoint:PointType["point"] = PointSet(matchData.data[currentPointID].point, String(matchData.data[currentPointID].pointGetSide), ruleSettings);
-                const nextPointElement:PointType = { ...pointDefaultData()[0], pointID:nextPointID, point:nextPoint };
-                const newMatchData = JSON.parse(JSON.stringify(matchData));
+        //ポイント計算を行い次の要素を用意する
+        const nextPoint:PointType["point"] = PointSet(pointData.point, pointData.pointGetSide, ruleSettings);
+        const nextPointElement:PointType = { ...pointDefaultData()[0], pointID:nextPointID, point:nextPoint };
+
+        //現在のDB情報を取得し、上記処理で作成した要素を追加し更新する
+        await db.matchData.get({ id: globalState.recodingMatchId })
+        .then((md) => {
+            if (md !== undefined) {
+                const newMatchData = JSON.parse(JSON.stringify(md));
                 newMatchData.data.push(nextPointElement);
-                await db.matchData.update(Number(globalState?.recodingMatchId),{data:newMatchData.data});
-                console.log("matchData更新");
-                console.log(matchData);
-            };
+                db.matchData.update(globalState.recodingMatchId,{currentPointId:nextPointID, data:newMatchData.data});
+                setPointData(md.data[nextPointID]);
+                setPointID(nextPointID);
+            }
+        })
+        .catch((error) => {
+            console.error("error" + error);
+        })
 
-            //セット終了時にはResult画面に遷移するか確認するダイアログを表示
-            // matchData.data[nextPointID].point.setCountA.length === 5 ? setFinishesFinalSet(true): setFinishesFinalSet(false);
-            // const setCountDifference:number = matchData.data[nextPointID].point.setCountA.length - matchData.data[currentPointID].point.setCountA.length;
-            // setCountDifference > 0 ? setOpen(true) : setOpen(false);
+        //セット終了時にはResult画面に遷移するか確認するダイアログを表示
+        // matchData.data[nextPointID].point.setCountA.length === 5 ? setFinishesFinalSet(true): setFinishesFinalSet(false);
+        // const setCountDifference:number = matchData.data[nextPointID].point.setCountA.length - matchData.data[currentPointID].point.setCountA.length;
+        // setCountDifference > 0 ? setOpen(true) : setOpen(false);
 
-            console.log(matchData.data[nextPointID]);
-
-            //各ボタンstateをポイントIDに紐づく値に更新
-            stAction.pointMoveSet !== undefined && stAction.pointMoveSet(matchData.data[nextPointID]);
-            setPointGetSide(matchData.data[nextPointID].pointGetSide);
-
-            //pointIDStateを更新
-            setPointID(nextPointID);
-            
-            //次へボタンの制御　ポイント取得サイドを選択状態でなければ移行できない
-            matchData.data[nextPointID].pointGetSide == null ? setCanMovePoint(false) : setCanMovePoint(true);            
-        }
-
+        //各ボタンstateをポイントIDに紐づく値に更新
+        stAction.pointMoveSet !== undefined && stAction.pointMoveSet(pointData);
+        setPointGetSide(pointData.pointGetSide);
+        
+        //次へボタンの制御　ポイント取得サイドを選択状態でなければ移行できない
+        pointData.pointGetSide == null ? setCanMovePoint(false) : setCanMovePoint(true);
     };
 
     //-ボタン
     const onClickPointIDSubtract = async () => {
         if (currentPointID > 0 && matchData !== undefined) {
-            //PointType配列の要素を1つ削除
-            const newMatchData = JSON.parse(JSON.stringify(matchData));
-            newMatchData.data.pop();
-            await db.matchData.update(Number(globalState?.recodingMatchId),{data:newMatchData.data});
-
-            //1つ前の入力内容を反映する
+            //1つ前のpointIDを指定
             const prevPointID = currentPointID - 1;
-            console.log(matchData);
-            stAction.pointMoveSet !== undefined && stAction.pointMoveSet(matchData.data[prevPointID]);
-            setPointGetSide(matchData.data[prevPointID].pointGetSide);
-            setPointID(prevPointID);
-            matchData.data[prevPointID].pointGetSide == null ? setCanMovePoint(false) : setCanMovePoint(true);
+
+            //MatchDataテーブルのdata要素を1つ削除し更新
+            await db.matchData.get({ id: globalState.recodingMatchId })
+            .then((md) => {
+                if (md !== undefined) {
+                    const newMatchData = JSON.parse(JSON.stringify(md));
+                    newMatchData.data.pop();
+                    db.matchData.update(globalState.recodingMatchId,{currentPointId:prevPointID, data:newMatchData.data});
+                    setPointData(md.data[prevPointID]);
+                    setPointID(prevPointID);
+                }
+            })
+            .catch((error) => {
+                console.error("error" + error);
+            })
+
+            //内容を反映する
+            stAction.pointMoveSet !== undefined && stAction.pointMoveSet(pointData);
+            setPointGetSide(pointData.pointGetSide);
+            pointData.pointGetSide == null ? setCanMovePoint(false) : setCanMovePoint(true);
         }
     };
 

@@ -1,6 +1,6 @@
 import { DEUCE_MODE, TIE_BREAK_MODE } from './AppConst';
 
-export type point = {
+type point = {
     pointCountA: number | string;
     pointCountB: number | string;
     gameCountA: number;

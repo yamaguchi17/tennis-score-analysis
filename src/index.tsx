@@ -6,7 +6,7 @@ import { GlobalStateProvider } from "./components/providers/GlobalStateProvider"
 
 const rootElement = document.getElementById("root");
 
-render(
+render( 
     <GlobalStateProvider>
         <DisplayTypeProvider>
             <RuleSettingsProvider>

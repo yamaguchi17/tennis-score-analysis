@@ -1,25 +1,4 @@
 import { useState } from "react";
-import { useContext } from "react";
-import { RuleSettingsContext } from "./providers/RuleSettingsProvider";
-import { PointType, ruleSetType } from "./common/AppTypes";
-import { useToggleBtnAction } from "../fooks/useToggleBtnAction";
-import { PointSet } from "./PointSet";
-import styled from '@emotion/styled'
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import Container from "@mui/material/Container";
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import RemoveCircOutlineleIcon from '@mui/icons-material/RemoveCircleOutline';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import ArrowRightIcon from '@mui/icons-material/ArrowRight';
-import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
-import ChevronRightSharpIcon from '@mui/icons-material/ChevronRightSharp';
-import ChevronLeftSharpIcon from '@mui/icons-material/ChevronLeftSharp';
-import TextField from '@mui/material/TextField';
 import { db } from "./common/db"
 import { useLiveQuery } from "dexie-react-hooks";
 

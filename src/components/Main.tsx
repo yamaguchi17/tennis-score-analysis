@@ -1,39 +1,42 @@
-import { useState,useContext } from "react";
+import { useContext } from "react";
 import { DisplayTypeContext } from "./providers/DisplayTypeProvider";
 import { GlobalStateContext } from "./providers/GlobalStateProvider";
+import { RuleSettingsContext } from "./providers/RuleSettingsProvider";
 import { RuleSettings } from "../components/RuleSettings"
 import { DISPLAY_TYPES } from "./common/AppConst";
+import { PointType,pointDefaultData} from './common/AppTypes';
+import { db } from "./common/db";
 import styled from '@emotion/styled'
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import { db } from "./common/db";
-import {globalStateType, PointType,pointDefaultData} from './common/AppTypes'
 
 export const Main = () => {
 
     const [ displayType, setDisplayType ] = useContext(DisplayTypeContext);
     const { globalState, setGlobalState } = useContext(GlobalStateContext);
+    const { ruleSettings, setRuleSettings } = useContext(RuleSettingsContext);
 
-    const newGameClick = () => {
+    const newGameClick = async () => {
         //新規開始の場合
         if(!globalState.isRecording){
+            const newglobalState = globalState;
+
             //stateを記録中に更新する
-            const newGlobalState:globalStateType = globalState;
-            newGlobalState.isRecording = true;
-            setGlobalState(newGlobalState);
-            db.globalState.update("0", newGlobalState);
+            db.globalState.update("0", {"isRecording":true});
+            newglobalState.isRecording = true;
             
             //matchDataテーブルに新規レコードを追加
             const data:PointType[] = pointDefaultData();
-            db.matchData.add({data});
+            data[0].point.serverSide = ruleSettings.selectedServer;
+            await db.matchData.add({currentPointId:0,data:data});
 
             //globalStateのrecodingMatchIdを追加されたレコードのIDに設定
-            db.matchData.reverse().first(item => {
-                const newGlobalState:globalStateType = globalState;
-                newGlobalState.recodingMatchId = Number(item?.id);
-                setGlobalState(newGlobalState);
-                db.globalState.update("0", newGlobalState);         
+            await db.matchData.reverse().first(item => {
+                db.globalState.update("0", {"recodingMatchId":Number(item?.id)});
+                newglobalState.recodingMatchId = Number(item?.id);
             })
+
+            setGlobalState(newglobalState);      
         }
         //表示をレコード画面に切り替える
         setDisplayType(DISPLAY_TYPES.RECORD);

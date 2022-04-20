@@ -1,64 +1,50 @@
-import { useState, useEffect, useContext } from "react";
-import { RuleSettingsContext } from "./providers/RuleSettingsProvider";
+import { useState, useEffect, useContext,  } from "react";
 import { TIE_BREAK_MODE, DEUCE_MODE } from "./common/AppConst";
+import { ruleSetType,globalRuleSetType, ruleSetDefaultDataGet } from "./common/AppTypes";
+import { RuleSettingsContext } from "./providers/RuleSettingsProvider";
+import { db } from "./common/db";
 import styled from '@emotion/styled'
-import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import Container from '@mui/material/Container';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import SettingsIcon from '@mui/icons-material/Settings';
 import TextField from '@mui/material/TextField';
 import Radio from '@mui/material/Radio';
-import { db } from "./common/db";
-import { ruleSetType } from "./common/AppTypes";
+
 
 export const RuleSettings = () => {
 
-    //ruleSettings Context
     const { ruleSettings, setRuleSettings } = useContext(RuleSettingsContext);
 
-    //DBに保存した設定をruleSettingsに読み込む
+    //stateのデフォルト値を取得
+    const ruleSetDefaultData:globalRuleSetType = ruleSetDefaultDataGet();
+
+    //ruleSettingsテーブルにレコードが存在しなければ、初期値レコードを追加。あればcontextに反映
     useEffect(() => {
-        const rs = db.ruleSettings.get({userId: "0"})
-        .then((rs)=>{
-        //ruleSettingsテーブルにレコードが存在しなければ、初期値レコードを追加
-        if(rs === undefined){
-            const item = db.ruleSettings.add({
-            userId:"0",
-            data:{
-                tieBreakMode: ruleSettings.tieBreakMode,
-                deuceMode: ruleSettings.deuceMode,
-                numberOfGames: ruleSettings.numberOfGames,
-                numberOfTieBreakPoint: ruleSettings.numberOfTieBreakPoint,
-                playerNameA: ruleSettings.playerNameA,
-                playerNameB: ruleSettings.playerNameB,
-                selectedServer: ruleSettings.selectedServer,                
-            }
+        db.ruleSettings.get({userId: "0"})
+            .then((rs)=>{
+                if(rs === undefined){
+                    db.ruleSettings.add(ruleSetDefaultData);
+                }else {
+                    const newState:ruleSetType = {
+                        tieBreakMode: rs.tieBreakMode,
+                        deuceMode: rs.deuceMode,
+                        numberOfGames: rs.numberOfGames,
+                        numberOfTieBreakPoint: rs.numberOfTieBreakPoint,
+                        playerNameA : rs.playerNameA,
+                        playerNameB : rs.playerNameB,
+                        selectedServer: rs.selectedServer,
+                    }
+                    setRuleSettings(newState);
+                }
+            })
+            .catch((error)=>{
+                console.error("error" + error);
             });
-        }
-        //globalStateテーブルにレコードが存在すれば、レコードをstateに反映
-        else {
-            const newRuleSettings:ruleSetType = {
-                tieBreakMode: rs.data.tieBreakMode,
-                deuceMode: rs.data.deuceMode,
-                numberOfGames: rs.data.numberOfGames,
-                numberOfTieBreakPoint: rs.data.numberOfTieBreakPoint,
-                playerNameA: rs.data.playerNameA,
-                playerNameB: rs.data.playerNameB,
-                selectedServer: rs.data.selectedServer,
-            }
-            setRuleSettings(newRuleSettings);
-        }
-        })
-        .catch((error)=>{
-            console.error("error" + error);
-        });
-    },[]);
+        }, []);
 
     //ruleSettings State
     const [ tieBreakMode, setTieBreakMode] = useState(ruleSettings.tieBreakMode);
@@ -71,29 +57,29 @@ export const RuleSettings = () => {
 
     //プレイヤー1の名前設定処理
     const playerNameAChange = (event:React.ChangeEvent<HTMLInputElement>) => {
+        db.ruleSettings.update("0", {playerNameA: event.target.value});
         setPlayerNameA(event.target.value);
         const newRuleSettings = ruleSettings;
         newRuleSettings.playerNameA = event.target.value;
         setRuleSettings(newRuleSettings);
-        db.ruleSettings.update("0", {data: newRuleSettings});
     };
 
     //プレイヤー2の名前設定処理
     const playerNameBChange = (event:React.ChangeEvent<HTMLInputElement>) => {
+        db.ruleSettings.update("0", {playerNameB: event.target.value});
         setPlayerNameB(event.target.value);
         const newRuleSettings = ruleSettings;
         newRuleSettings.playerNameB = event.target.value;
         setRuleSettings(newRuleSettings);
-        db.ruleSettings.update("0", {data: newRuleSettings});
     };
 
     //サーバー設定処理
     const selectedServerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSelectedServer(event.target.value);
-      const newRuleSettings = ruleSettings;
-      newRuleSettings.selectedServer = event.target.value;
-      setRuleSettings(newRuleSettings);
-      db.ruleSettings.update("0", {data: newRuleSettings});
+        db.ruleSettings.update("0", {selectedServer: event.target.value});        
+        setSelectedServer(event.target.value);
+        const newRuleSettings = ruleSettings;
+        newRuleSettings.selectedServer = event.target.value;
+        setRuleSettings(newRuleSettings);
     };
 
     //タイブレークモードボタン押下処理
@@ -101,11 +87,11 @@ export const RuleSettings = () => {
         event: React.MouseEvent<HTMLElement>,
         newItem: string
     ) => {
+            db.ruleSettings.update("0", {tieBreakMode: newItem});
             setTieBreakMode(newItem);
             const newRuleSettings = ruleSettings;
             newRuleSettings.tieBreakMode = newItem;
             setRuleSettings(newRuleSettings);
-            db.ruleSettings.update("0", {data: newRuleSettings});
     };
 
     //デュースモードボタン押下処理
@@ -113,31 +99,31 @@ export const RuleSettings = () => {
         event: React.MouseEvent<HTMLElement>,
         newItem: string
     ) => {
+        db.ruleSettings.update("0", {deuceMode: newItem});        
         setDeuceMode(newItem);
         const newRuleSettings = ruleSettings;
         newRuleSettings.deuceMode = newItem;
         setRuleSettings(newRuleSettings);
-        db.ruleSettings.update("0", {data: newRuleSettings});
     };
 
     //ゲーム数セレクト処理
     const numberOfGamesChange = (event: SelectChangeEvent) => {
+        db.ruleSettings.update("0", {numberOfGames: event.target.value});
         const newItem = event.target.value;
         setNumberOfGames(newItem);
         const newRuleSettings = ruleSettings;
         newRuleSettings.numberOfGames = newItem;
         setRuleSettings(newRuleSettings);
-        db.ruleSettings.update("0", {data: newRuleSettings});   
     };
 
     //タイブレークポイント数セレクト処理
     const numberOfTieBreakPointChange = (event: SelectChangeEvent) => {
+        db.ruleSettings.update("0", {numberOfTieBreakPoint: event.target.value});
         const newItem = event.target.value;
         setNumberOfTieBreakPoint(newItem);
         const newRuleSettings = ruleSettings;
         newRuleSettings.numberOfTieBreakPoint = newItem;
         setRuleSettings(newRuleSettings);
-        db.ruleSettings.update("0", {data: newRuleSettings});         
     };  
 
     return (
@@ -235,6 +221,11 @@ export const RuleSettings = () => {
                         <MenuItem value={"8"}>8</MenuItem>
                         <MenuItem value={"9"}>9</MenuItem>
                         <MenuItem value={"10"}>10</MenuItem>
+                        <MenuItem value={"11"}>11</MenuItem>
+                        <MenuItem value={"12"}>12</MenuItem>
+                        <MenuItem value={"13"}>13</MenuItem>
+                        <MenuItem value={"14"}>14</MenuItem>
+                        <MenuItem value={"15"}>15</MenuItem>
                     </Select>
                 </SFormControl>
             </SSettingsInnerDiv>

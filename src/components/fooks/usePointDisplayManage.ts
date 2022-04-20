@@ -1,0 +1,149 @@
+import { useState, useContext } from "react";
+import { PointSet } from "../PointSet";
+import { usePointContentsSelect } from "../fooks/usePointContentsSelect";
+import { PointType, pointDefaultData} from '../common/AppTypes';
+import { DISPLAY_TYPES } from "../common/AppConst";
+import { GlobalStateContext } from "../providers/GlobalStateProvider";
+import { RuleSettingsContext } from "../providers/RuleSettingsProvider";
+import { db } from "../common/db";
+import { useLiveQuery } from "dexie-react-hooks";
+
+export const usePointDisplayManage = () => {
+
+    const { globalState, setGlobalState } = useContext(GlobalStateContext);
+    const { ruleSettings, setRuleSettings } = useContext(RuleSettingsContext);
+    const matchData = useLiveQuery(() => db.matchData.get({id:globalState.recodingMatchId}),[]);
+    
+    
+    //DBから読み込み
+    //const globalState = useLiveQuery(() => db.globalState.get({userId:"0"}) ,[]);
+    //const matchData = useLiveQuery(() => db.matchData.get({id:globalState?.recodingMatchId}) ,[]);
+    //const ruleSettings = useLiveQuery(() => db.ruleSettings.get({userId:"0"}) ,[]);
+
+    //pointMoveSetのため読み込み
+    const [st, stAction] = usePointContentsSelect();
+    
+    //現在のpointのindexを扱うstate
+    const [currentPointID, setPointID] = useState(Number(matchData?.currentPointId));
+    
+    //ポイント取得サイドボタン用state
+    const [pointGetSide, setPointGetSide] = useState('');
+
+    //次へボタンの制御state
+    const [canMovePoint, setCanMovePoint] = useState<boolean>(false);
+
+    // let point = pointDefaultData()[0];
+    // if(!matchData) point = matchData.data[currentPointID]
+
+    // console.log(pSt.matchData?.data[pSt.currentPointID].point);
+    // const point = pSt.matchData?.data[pSt.currentPointID].point;
+    //const point = !pSt.matchData ? pSt.matchData?.data[pSt.currentPointID].point : pointDefault[0];
+    //if(pSt.ruleSettings === undefined || point === undefined || pAction.pointGetSideChange === undefined) return null;
+
+
+    //ダイアログ
+    // const [open, setOpen] = useState(false);
+    // const [selectedValue, setSelectedValue] = useState("");
+    // const [finishesFinalSet, setFinishesFinalSet] = useState(false);
+    // const [displayType, setDisplayType] = useContext(DisplayTypeContext);
+    // const dialogClose = (value: string) => {
+    //     setOpen(false);
+    //     setSelectedValue(value);
+    //     if (value === "Result") setDisplayType(DISPLAY_TYPES.RESULT);
+    // }; 
+
+    //+ボタン
+    const onClickPointIDAdd = async () => {
+        //次のpointIDを指定
+        const nextPointID = currentPointID + 1;
+
+        if(matchData !== undefined){
+            //ポイント計算を行い次の要素を追加する
+            if ( nextPointID > matchData?.data.length -1 ) {
+                // const nextPoint:PointType["point"] = PointSet(matchData.data[currentPointID].point, String(matchData.data[currentPointID].pointGetSide), ruleSettings);
+                // const nextPointElement:PointType = { pointID:nextPointID, point:nextPoint };
+                // const newMatchData = JSON.parse(JSON.stringify(matchData));
+                // newMatchData.data.push(nextPointElement);
+                // await db.matchData.update(Number(globalState?.recodingMatchId),{data:newMatchData.data});
+            };
+
+            //セット終了時にはResult画面に遷移するか確認するダイアログを表示
+            // matchData.data[nextPointID].point.setCountA.length === 5 ? setFinishesFinalSet(true): setFinishesFinalSet(false);
+            // const setCountDifference:number = matchData.data[nextPointID].point.setCountA.length - matchData.data[currentPointID].point.setCountA.length;
+            // setCountDifference > 0 ? setOpen(true) : setOpen(false);
+
+            //各ボタンstateをポイントIDに紐づく値に更新
+            stAction.pointMoveSet !== undefined && stAction.pointMoveSet(matchData.data[nextPointID]);
+
+            //pointIDStateを更新
+            setPointID(nextPointID);
+            
+            //次へボタンの制御　ポイント取得サイドを選択状態でなければ移行できない
+            matchData.data[nextPointID].pointGetSide == null ? setCanMovePoint(false) : setCanMovePoint(true);            
+        }
+
+    };
+
+    //-ボタン
+    const onClickPointIDSubtract = async () => {
+        if (currentPointID > 0 && matchData !== undefined) {
+            //PointType配列の要素を1つ削除
+            const newMatchData = JSON.parse(JSON.stringify(matchData));
+            newMatchData.data.pop();
+            await db.matchData.update(Number(globalState?.recodingMatchId),{data:newMatchData.data});
+
+            //1つ前の入力内容を反映する
+            const prevPointID = currentPointID - 1;
+            stAction.pointMoveSet !== undefined && stAction.pointMoveSet(matchData.data[prevPointID]);
+            setPointID(prevPointID);
+            matchData.data[prevPointID].pointGetSide == null ? setCanMovePoint(false) : setCanMovePoint(true);
+        }
+    };
+
+    //リセットボタン
+    const onClickPointIDZero = () => {
+        // setPointID(0);
+        // pointArray = [{
+        //     pointID: 0,
+        //     point: {
+        //         pointCountA: 0,
+        //         pointCountB: 0,
+        //         gameCountA: 0,
+        //         gameCountB: 0,
+        //         setCountA: [],
+        //         setCountB: [],
+        //         enabledTieBreak: false,
+        //         deuceCountInGame: 0,
+        //         serverSide: String(ruleSettings.selectedServer)
+        //     }
+        // }];
+    };    
+
+    //ポイント取得サイドボタンボタン押下処理
+    const pointGetSideChange = (
+        newPointGetSide: string
+    ) => {
+        if(newPointGetSide === pointGetSide) newPointGetSide = "";
+        setPointGetSide(newPointGetSide);
+        const newMatchData = JSON.parse(JSON.stringify(matchData));
+        if(newMatchData !== undefined) newMatchData.data[Number(matchData?.currentPointId)].pointGetSide = newPointGetSide;
+        db.matchData.update(Number(globalState?.recodingMatchId),{newMatchData});           
+        //次へボタンの制御　ポイント取得サイドが選択状態ならば移行可能
+        (newPointGetSide === null || newPointGetSide === "") ? setCanMovePoint(false) : setCanMovePoint(true);
+    };
+
+    return ([
+        {
+            matchData,
+            ruleSettings,
+            currentPointID,
+            pointGetSide,
+            canMovePoint,
+        },{
+            onClickPointIDAdd,
+            onClickPointIDSubtract,
+            onClickPointIDZero,
+            pointGetSideChange,
+        }
+    ]);
+};

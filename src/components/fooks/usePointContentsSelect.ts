@@ -1,16 +1,13 @@
 import { useState, useContext } from "react";
 import { PointType } from '../common/AppTypes';
 import { GlobalStateContext } from "../providers/GlobalStateProvider";
-import { db } from "../common/db";
-import { matchDataDBupdate } '../common/AppFunctions';
+import { matchDataDBupdate } from '../common/AppFunctions';
 
 //トグルボタンの各処理
 export const usePointContentsSelect = () => {
     
     const { globalState, setGlobalState } = useContext(GlobalStateContext);
 
-    //ポイント取得サイドボタン用state
-    //const [pointGetSide, setPointGetSide] = useState('');
     //Serveボタン用state
     const [serveSelectItem, setServeItem] = useState('');
     //Serve Courseボタン用state
@@ -30,18 +27,6 @@ export const usePointContentsSelect = () => {
     //ラリー回数カウント用state
     const [rallyCountItem, setRallyCountItem] = useState(0);  
 
-    // //DB更新関数
-    // const matchDataDBupdate = (name:string, value:string|number) => {
-    //     db.matchData.get({id:globalState.recodingMatchId}).then((md)=>{
-    //         if(md !== undefined){
-    //             const newData:PointType[] = JSON.parse(JSON.stringify(md.data));
-    //             const keyName: keyof PointType = name as keyof PointType;
-    //             newData[md.currentPointId][keyName] = value;
-    //             db.matchData.update(globalState.recodingMatchId,{data:newData});
-    //         }
-    //     });
-    // };
-
     //Serveボタン押下処理
     const serveChange = (
         event: React.MouseEvent<HTMLElement>,
@@ -51,12 +36,12 @@ export const usePointContentsSelect = () => {
         if(newServeSelectItem === "" || newServeSelectItem === null || newServeSelectItem === "Double Fault"){
             setServeCourceItem("");
             setServeTypeItem("");
-            matchDataDBupdate("serveCource","");
-            matchDataDBupdate("serveType","");
+            matchDataDBupdate("serveCource","",globalState.recodingMatchId);
+            matchDataDBupdate("serveType","",globalState.recodingMatchId);
         }
         //stateとDBへの反映
         setServeItem(newServeSelectItem);
-        matchDataDBupdate("serve",newServeSelectItem);
+        matchDataDBupdate("serve",newServeSelectItem,globalState.recodingMatchId);
     };
 
     //Serve Courceボタン押下処理
@@ -65,7 +50,7 @@ export const usePointContentsSelect = () => {
         newServeCourceSelectItem: string,
     ) => {
         setServeCourceItem(newServeCourceSelectItem);
-        matchDataDBupdate("serveCource",newServeCourceSelectItem);
+        matchDataDBupdate("serveCource",newServeCourceSelectItem,globalState.recodingMatchId);
     };
     
     //Serve Typeボタン押下処理
@@ -74,7 +59,7 @@ export const usePointContentsSelect = () => {
         newServeTypeSelectItem: string,
     ) => {
         setServeTypeItem(newServeTypeSelectItem);
-        matchDataDBupdate("serveType",newServeTypeSelectItem);     
+        matchDataDBupdate("serveType",newServeTypeSelectItem,globalState.recodingMatchId);     
     };
 
     //Point Categoryボタン押下処理
@@ -88,14 +73,14 @@ export const usePointContentsSelect = () => {
             setShotSpinTypeItem("");
             setShotDetailItem("");
             setShotDetailCourceItem("");
-            matchDataDBupdate("shotType","");
-            matchDataDBupdate("shotSpinType","");
-            matchDataDBupdate("shotDetail","");
-            matchDataDBupdate("shotDetailCource","");
+            matchDataDBupdate("shotType","",globalState.recodingMatchId);
+            matchDataDBupdate("shotSpinType","",globalState.recodingMatchId);
+            matchDataDBupdate("shotDetail","",globalState.recodingMatchId);
+            matchDataDBupdate("shotDetailCource","",globalState.recodingMatchId);
         }
         //stateとポイント管理配列への反映
         setPointCategoryItem(newPointCategorySelectItem);
-        matchDataDBupdate("pointCategory",newPointCategorySelectItem);     
+        matchDataDBupdate("pointCategory",newPointCategorySelectItem,globalState.recodingMatchId);     
     };
 
     //Shot Typeボタン押下処理
@@ -104,7 +89,7 @@ export const usePointContentsSelect = () => {
         newShotTypeSelectItem: string,
     ) => {
         setShotTypeItem(newShotTypeSelectItem);
-        matchDataDBupdate("shotType",newShotTypeSelectItem);        
+        matchDataDBupdate("shotType",newShotTypeSelectItem,globalState.recodingMatchId);        
     };
 
     //Shot Spin Typeボタン押下処理
@@ -113,7 +98,7 @@ export const usePointContentsSelect = () => {
         newShotSpinTypeSelectItem: string,
     ) => {
         setShotSpinTypeItem(newShotSpinTypeSelectItem);
-        matchDataDBupdate("serveCoushotSpinTyperce",newShotSpinTypeSelectItem);     
+        matchDataDBupdate("serveCoushotSpinTyperce",newShotSpinTypeSelectItem,globalState.recodingMatchId);     
     };
 
     //Shot Detailボタン押下処理
@@ -122,7 +107,7 @@ export const usePointContentsSelect = () => {
         newShotDetailSelectItem: string,
     ) => {
         setShotDetailItem(newShotDetailSelectItem);
-        matchDataDBupdate("shotDetail",newShotDetailSelectItem);         
+        matchDataDBupdate("shotDetail",newShotDetailSelectItem,globalState.recodingMatchId);         
     };
 
     //Shot Detail Courceボタン押下処理
@@ -131,14 +116,14 @@ export const usePointContentsSelect = () => {
         newShotDetailCourceSelectItem: string,
     ) => {
         setShotDetailCourceItem(newShotDetailCourceSelectItem);
-        matchDataDBupdate("shotDetailCource",newShotDetailCourceSelectItem);      
+        matchDataDBupdate("shotDetailCource",newShotDetailCourceSelectItem,globalState.recodingMatchId);      
     };
 
     //rallyCount +ボタン押下処理
     const rallyCountAdd = () => {
         const newRallyCountItem = rallyCountItem + 1;
         setRallyCountItem(newRallyCountItem);
-        matchDataDBupdate("rallyCount",newRallyCountItem);       
+        matchDataDBupdate("rallyCount",newRallyCountItem,globalState.recodingMatchId);       
     };
 
     //rallyCount -ボタン押下処理
@@ -146,7 +131,7 @@ export const usePointContentsSelect = () => {
         const newRallyCountItem = rallyCountItem - 1;
         if(newRallyCountItem >= 0) {
             setRallyCountItem(newRallyCountItem);
-            matchDataDBupdate("rallyCount",newRallyCountItem);
+            matchDataDBupdate("rallyCount",newRallyCountItem,globalState.recodingMatchId);
         }      
     };
 

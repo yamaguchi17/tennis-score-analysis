@@ -1,4 +1,4 @@
-import { useEffect, useState, useLayoutEffect } from "react";
+import { useState, useLayoutEffect } from "react";
 import { usePointDisplayManage } from "./fooks/usePointDisplayManage";
 import { PointType, pointDefaultData } from './common/AppTypes';
 import styled from '@emotion/styled'
@@ -9,30 +9,20 @@ import ChevronLeftSharpIcon from '@mui/icons-material/ChevronLeftSharp';
 import { useContext } from "react";
 import { PointSet } from "./PointSet";
 import { usePointContentsSelect } from "./fooks/usePointContentsSelect";
-import { DISPLAY_TYPES } from "./common/AppConst";
 import { GlobalStateContext } from "./providers/GlobalStateProvider";
 import { RuleSettingsContext } from "./providers/RuleSettingsProvider";
 import { db } from "./common/db";
-import { useLiveQuery } from "dexie-react-hooks";
+import { matchDataDBupdate } from './common/AppFunctions';
+import { convertLength } from "@mui/material/styles/cssUtils";
 
 export const PointDisplay = () => {
-    //const [pSt, pAction] = usePointDisplayManage();
-    //if(pSt.ruleSettings === undefined || point === undefined || pAction.pointGetSideChange === undefined) return null;
-    //if(pSt.matchData === undefined) return null;
-    
-    
-
+  
+    //context
     const { globalState, setGlobalState } = useContext(GlobalStateContext);
     const { ruleSettings, setRuleSettings } = useContext(RuleSettingsContext);
 
-    const matchData = useLiveQuery(() => db.matchData.get({id:globalState.recodingMatchId}),[]);
-
+    //現在のポイント内容を保有
     const [ pointData, setPointData ] = useState<PointType>(pointDefaultData()[0]);
-    
-    //DBから読み込み
-    //const globalState = useLiveQuery(() => db.globalState.get({userId:"0"}) ,[]);
-    //const matchData = useLiveQuery(() => db.matchData.get({id:globalState?.recodingMatchId}) ,[]);
-    //const ruleSettings = useLiveQuery(() => db.ruleSettings.get({userId:"0"}) ,[]);
 
     //pointMoveSetのため読み込み
     const [st, stAction] = usePointContentsSelect();
@@ -49,8 +39,6 @@ export const PointDisplay = () => {
     //DB読み込み完了フラグ
     const [ isCompleted, setIsCompleted ]  = useState(false);
 
-    //現在表示されるポイント内容
-    //const [ point, setPoint ] = useState(pointDefaultData()[0].point);
 
     //DBからcurrentPointId,現在のポイント内容を取得
     useLayoutEffect(() => {
@@ -69,21 +57,7 @@ export const PointDisplay = () => {
     }, []);
 
     //DBから読み込まれるまで処理を止める
-    if(!matchData || !isCompleted ) return null;    //matchData削除後修正
-
-
-    //point Stateにコピー
-    //setPoint(matchData.data[currentPointID].point);
-
-
-    // let point = pointDefaultData()[0];
-    // if(!matchData) point = matchData.data[currentPointID]
-
-    // console.log(pSt.matchData?.data[pSt.currentPointID].point);
-    // const point = pSt.matchData?.data[pSt.currentPointID].point;
-    //const point = !pSt.matchData ? pSt.matchData?.data[pSt.currentPointID].point : pointDefault[0];
-    //if(pSt.ruleSettings === undefined || point === undefined || pAction.pointGetSideChange === undefined) return null;
-
+    if(!isCompleted ) return null;
 
     //ダイアログ
     // const [open, setOpen] = useState(false);
@@ -102,8 +76,12 @@ export const PointDisplay = () => {
         const nextPointID = currentPointID + 1;
 
         //ポイント計算を行い次の要素を用意する
-        const nextPoint:PointType["point"] = PointSet(pointData.point, pointData.pointGetSide, ruleSettings);
+        const nextPoint:PointType["point"] = PointSet(pointData.point, pointGetSide, ruleSettings);
         const nextPointElement:PointType = { ...pointDefaultData()[0], pointID:nextPointID, point:nextPoint };
+        
+        //stateへ反映
+        setPointData(nextPointElement);
+        setPointID(nextPointID);
 
         //現在のDB情報を取得し、上記処理で作成した要素を追加し更新する
         await db.matchData.get({ id: globalState.recodingMatchId })
@@ -112,8 +90,6 @@ export const PointDisplay = () => {
                 const newMatchData = JSON.parse(JSON.stringify(md));
                 newMatchData.data.push(nextPointElement);
                 db.matchData.update(globalState.recodingMatchId,{currentPointId:nextPointID, data:newMatchData.data});
-                setPointData(md.data[nextPointID]);
-                setPointID(nextPointID);
             }
         })
         .catch((error) => {
@@ -126,16 +102,16 @@ export const PointDisplay = () => {
         // setCountDifference > 0 ? setOpen(true) : setOpen(false);
 
         //各ボタンstateをポイントIDに紐づく値に更新
-        stAction.pointMoveSet !== undefined && stAction.pointMoveSet(pointData);
-        setPointGetSide(pointData.pointGetSide);
+        stAction.pointMoveSet !== undefined && stAction.pointMoveSet(nextPointElement);
+        setPointGetSide(nextPointElement.pointGetSide);
         
         //次へボタンの制御　ポイント取得サイドを選択状態でなければ移行できない
-        pointData.pointGetSide == null ? setCanMovePoint(false) : setCanMovePoint(true);
+        nextPointElement.pointGetSide == null ? setCanMovePoint(false) : setCanMovePoint(true);
     };
 
     //-ボタン
     const onClickPointIDSubtract = async () => {
-        if (currentPointID > 0 && matchData !== undefined) {
+        if (currentPointID > 0) {
             //1つ前のpointIDを指定
             const prevPointID = currentPointID - 1;
 
@@ -143,21 +119,21 @@ export const PointDisplay = () => {
             await db.matchData.get({ id: globalState.recodingMatchId })
             .then((md) => {
                 if (md !== undefined) {
+                    //DB更新
                     const newMatchData = JSON.parse(JSON.stringify(md));
                     newMatchData.data.pop();
                     db.matchData.update(globalState.recodingMatchId,{currentPointId:prevPointID, data:newMatchData.data});
+                    //内容を反映する
                     setPointData(md.data[prevPointID]);
                     setPointID(prevPointID);
+                    stAction.pointMoveSet !== undefined && stAction.pointMoveSet(md.data[prevPointID]);
+                    setPointGetSide(md.data[prevPointID].pointGetSide);
+                    md.data[prevPointID].pointGetSide == null ? setCanMovePoint(false) : setCanMovePoint(true);                    
                 }
             })
             .catch((error) => {
                 console.error("error" + error);
             })
-
-            //内容を反映する
-            stAction.pointMoveSet !== undefined && stAction.pointMoveSet(pointData);
-            setPointGetSide(pointData.pointGetSide);
-            pointData.pointGetSide == null ? setCanMovePoint(false) : setCanMovePoint(true);
         }
     };
 
@@ -186,13 +162,11 @@ export const PointDisplay = () => {
     ) => {
         if(newPointGetSide === pointGetSide) newPointGetSide = "";
         setPointGetSide(newPointGetSide);
-        const newMatchData = JSON.parse(JSON.stringify(matchData));
-        if(newMatchData !== undefined) newMatchData.data[Number(matchData?.currentPointId)].pointGetSide = newPointGetSide;
-        db.matchData.update(Number(globalState?.recodingMatchId),{data:newMatchData.data});           
+        matchDataDBupdate("pointGetSide",newPointGetSide,globalState.recodingMatchId);
+
         //次へボタンの制御　ポイント取得サイドが選択状態ならば移行可能
         (newPointGetSide === null || newPointGetSide === "") ? setCanMovePoint(false) : setCanMovePoint(true);
     };
-
 
     return (
         <SPointDisplayOuterBase>
@@ -204,19 +178,19 @@ export const PointDisplay = () => {
                 </SMovePointButtonArea>
                 <SPointDisplayArea onClick={() => pointGetSideChange("sideA")} selectedPointGetSide={pointGetSide} >
                     <SPointDisplayName>{ruleSettings.playerNameA}</SPointDisplayName>
-                    <SPointDisplay>{matchData.data[currentPointID].point.pointCountA}</SPointDisplay>
-                    {matchData.data[currentPointID].point.serverSide === 'player1' && <SPointDisplayServer></SPointDisplayServer>}
+                    <SPointDisplay>{pointData.point.pointCountA}</SPointDisplay>
+                    {pointData.point.serverSide === 'player1' && <SPointDisplayServer></SPointDisplayServer>}
                 </SPointDisplayArea>
                 <SGameScoreArea>
-                    {matchData.data[currentPointID].point.setCountA.map((value,index)=>{
-                        return <SGameScoreEle key={"setCount"+index}>{String(value)}-{String(matchData.data[currentPointID].point.setCountB[index])}</SGameScoreEle>
+                    {pointData.point.setCountA.map((value,index)=>{
+                        return <SGameScoreEle key={"setCount"+index}>{String(value)}-{String(pointData.point.setCountB[index])}</SGameScoreEle>
                     })}
-                    <SGameScoreEle key="gameCount">{matchData.data[currentPointID].point.gameCountA}-{matchData.data[currentPointID].point.gameCountB}</SGameScoreEle>
+                    <SGameScoreEle key="gameCount">{pointData.point.gameCountA}-{pointData.point.gameCountB}</SGameScoreEle>
                 </SGameScoreArea>
                 <SPointDisplayArea onClick={() => pointGetSideChange("sideB")} selectedPointGetSide={pointGetSide}>
                     <SPointDisplayName>{ruleSettings.playerNameB}</SPointDisplayName>
-                    <SPointDisplay>{matchData.data[currentPointID].point.pointCountB}</SPointDisplay>
-                    {matchData.data[currentPointID].point.serverSide === 'player2' && <SPointDisplayServer></SPointDisplayServer>}
+                    <SPointDisplay>{pointData.point.pointCountB}</SPointDisplay>
+                    {pointData.point.serverSide === 'player2' && <SPointDisplayServer></SPointDisplayServer>}
                 </SPointDisplayArea>
                 <SMovePointButtonArea>
                     <IconButton aria-label="nextPoint" onClick={onClickPointIDAdd} disabled={!canMovePoint} sx={{ padding: 0 }}>

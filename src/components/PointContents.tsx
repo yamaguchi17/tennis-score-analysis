@@ -11,6 +11,9 @@ export const PointContents = () => {
 
     const [st, stAction] = usePointContentsSelect();
 
+    console.log(st.serveSelectItem);
+    console.log("レンダリング");
+
     return (
         <>
             <SOuterArea>

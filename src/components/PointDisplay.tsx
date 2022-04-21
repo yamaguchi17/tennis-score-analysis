@@ -1,21 +1,25 @@
-import { useState, useLayoutEffect } from "react";
-import { usePointDisplayManage } from "./fooks/usePointDisplayManage";
+import { useState, useLayoutEffect, useContext } from "react";
 import { PointType, pointDefaultData } from './common/AppTypes';
+import { DISPLAY_TYPES } from "./common/AppConst";
+import { matchDataDBupdate } from './common/AppFunctions';
+import { db } from "./common/db";
+import { PointSet } from "./PointSet";
+import { DisplayResultDialog } from "./Dialog";
+import { GlobalStateContext } from "./providers/GlobalStateProvider";
+import { RuleSettingsContext } from "./providers/RuleSettingsProvider";
+import { DisplayTypeContext } from "./providers/DisplayTypeProvider";
 import styled from '@emotion/styled'
 import IconButton from "@mui/material/IconButton";
 import Container from "@mui/material/Container";
 import ChevronRightSharpIcon from '@mui/icons-material/ChevronRightSharp';
 import ChevronLeftSharpIcon from '@mui/icons-material/ChevronLeftSharp';
-import { useContext } from "react";
-import { PointSet } from "./PointSet";
-import { usePointContentsSelect } from "./fooks/usePointContentsSelect";
-import { GlobalStateContext } from "./providers/GlobalStateProvider";
-import { RuleSettingsContext } from "./providers/RuleSettingsProvider";
-import { db } from "./common/db";
-import { matchDataDBupdate } from './common/AppFunctions';
-import { convertLength } from "@mui/material/styles/cssUtils";
 
-export const PointDisplay = () => {
+type Props = {
+    currentPointID: number,
+    setPointID: React.Dispatch<React.SetStateAction<number>>
+}
+
+export const PointDisplay: React.VFC<Props> = ({currentPointID, setPointID}) => {
   
     //context
     const { globalState, setGlobalState } = useContext(GlobalStateContext);
@@ -23,22 +27,23 @@ export const PointDisplay = () => {
 
     //現在のポイント内容を保有
     const [ pointData, setPointData ] = useState<PointType>(pointDefaultData()[0]);
-
-    //pointMoveSetのため読み込み
-    const [st, stAction] = usePointContentsSelect();
-    
-    //現在のpointのindexを扱うstate
-    const [currentPointID, setPointID] = useState(0);
-    
     //ポイント取得サイドボタン用state
     const [pointGetSide, setPointGetSide] = useState('');
-
     //次へボタンの制御state
     const [canMovePoint, setCanMovePoint] = useState<boolean>(false);
-    
     //DB読み込み完了フラグ
     const [ isCompleted, setIsCompleted ]  = useState(false);
 
+    //ダイアログ関連
+    const [open, setOpen] = useState(false);
+    const [selectedValue, setSelectedValue] = useState("");
+    const [finishesFinalSet, setFinishesFinalSet] = useState(false);
+    const [displayType, setDisplayType] = useContext(DisplayTypeContext);
+    const dialogClose = (value: string) => {
+        setOpen(false);
+        setSelectedValue(value);
+        if (value === "Result") setDisplayType(DISPLAY_TYPES.RESULT);
+    };     
 
     //DBからcurrentPointId,現在のポイント内容を取得
     useLayoutEffect(() => {
@@ -59,17 +64,6 @@ export const PointDisplay = () => {
     //DBから読み込まれるまで処理を止める
     if(!isCompleted ) return null;
 
-    //ダイアログ
-    // const [open, setOpen] = useState(false);
-    // const [selectedValue, setSelectedValue] = useState("");
-    // const [finishesFinalSet, setFinishesFinalSet] = useState(false);
-    // const [displayType, setDisplayType] = useContext(DisplayTypeContext);
-    // const dialogClose = (value: string) => {
-    //     setOpen(false);
-    //     setSelectedValue(value);
-    //     if (value === "Result") setDisplayType(DISPLAY_TYPES.RESULT);
-    // }; 
-
     //+ボタン
     const onClickPointIDAdd = async () => {
         //次のpointIDを指定
@@ -79,10 +73,6 @@ export const PointDisplay = () => {
         const nextPoint:PointType["point"] = PointSet(pointData.point, pointGetSide, ruleSettings);
         const nextPointElement:PointType = { ...pointDefaultData()[0], pointID:nextPointID, point:nextPoint };
         
-        //stateへ反映
-        setPointData(nextPointElement);
-        setPointID(nextPointID);
-
         //現在のDB情報を取得し、上記処理で作成した要素を追加し更新する
         await db.matchData.get({ id: globalState.recodingMatchId })
         .then((md) => {
@@ -96,17 +86,18 @@ export const PointDisplay = () => {
             console.error("error" + error);
         })
 
-        //セット終了時にはResult画面に遷移するか確認するダイアログを表示
-        // matchData.data[nextPointID].point.setCountA.length === 5 ? setFinishesFinalSet(true): setFinishesFinalSet(false);
-        // const setCountDifference:number = matchData.data[nextPointID].point.setCountA.length - matchData.data[currentPointID].point.setCountA.length;
-        // setCountDifference > 0 ? setOpen(true) : setOpen(false);
+        //ダイアログ表示判定　セット終了時にはResult画面に遷移するか確認
+        nextPointElement.point.setCountA.length >= 5 ? setFinishesFinalSet(true): setFinishesFinalSet(false);
+        const setCountDifference:number = nextPointElement.point.setCountA.length - pointData.point.setCountA.length;
+        setCountDifference > 0 ? setOpen(true) : setOpen(false);
 
-        //各ボタンstateをポイントIDに紐づく値に更新
-        stAction.pointMoveSet !== undefined && stAction.pointMoveSet(nextPointElement);
+        //stateへ反映
+        setPointData(nextPointElement);
+        setPointID(nextPointID);
         setPointGetSide(nextPointElement.pointGetSide);
-        
+
         //次へボタンの制御　ポイント取得サイドを選択状態でなければ移行できない
-        nextPointElement.pointGetSide == null ? setCanMovePoint(false) : setCanMovePoint(true);
+        (nextPointElement.pointGetSide === null || nextPointElement.pointGetSide === "") ? setCanMovePoint(false) : setCanMovePoint(true);
     };
 
     //-ボタン
@@ -125,36 +116,25 @@ export const PointDisplay = () => {
                     db.matchData.update(globalState.recodingMatchId,{currentPointId:prevPointID, data:newMatchData.data});
                     //内容を反映する
                     setPointData(md.data[prevPointID]);
-                    setPointID(prevPointID);
-                    stAction.pointMoveSet !== undefined && stAction.pointMoveSet(md.data[prevPointID]);
+                    //stAction.pointMoveSet !== undefined && stAction.pointMoveSet(md.data[prevPointID]);
                     setPointGetSide(md.data[prevPointID].pointGetSide);
-                    md.data[prevPointID].pointGetSide == null ? setCanMovePoint(false) : setCanMovePoint(true);                    
+                    (md.data[prevPointID].pointGetSide === null || md.data[prevPointID].pointGetSide === "") ? setCanMovePoint(false) : setCanMovePoint(true);
                 }
             })
             .catch((error) => {
                 console.error("error" + error);
             })
+
+            setPointID(prevPointID);
         }
     };
 
     //リセットボタン
-    const onClickPointIDZero = () => {
-        // setPointID(0);
-        // pointArray = [{
-        //     pointID: 0,
-        //     point: {
-        //         pointCountA: 0,
-        //         pointCountB: 0,
-        //         gameCountA: 0,
-        //         gameCountB: 0,
-        //         setCountA: [],
-        //         setCountB: [],
-        //         enabledTieBreak: false,
-        //         deuceCountInGame: 0,
-        //         serverSide: String(ruleSettings.selectedServer)
-        //     }
-        // }];
-    };    
+    const onClickPointIDReset = () => {
+        setPointID(0);
+        setPointData(pointDefaultData()[0]);
+        db.matchData.update(globalState.recodingMatchId,{currentPointId:0, data:pointDefaultData()[0]});
+    };
 
     //ポイント取得サイドボタンボタン押下処理
     const pointGetSideChange = (
@@ -169,6 +149,7 @@ export const PointDisplay = () => {
     };
 
     return (
+        <>
         <SPointDisplayOuterBase>
             <SPointDisplayInnerBase maxWidth="sm">
                 <SMovePointButtonArea>
@@ -199,6 +180,8 @@ export const PointDisplay = () => {
                 </SMovePointButtonArea>
             </SPointDisplayInnerBase>
         </SPointDisplayOuterBase>
+        <DisplayResultDialog selectedValue={selectedValue} open={open} onClose={dialogClose} finishesFinalSet={finishesFinalSet} />
+        </>
     );
 }
 

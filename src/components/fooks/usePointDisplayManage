@@ -21,7 +21,7 @@ export const usePointDisplayManage = () => {
     //const ruleSettings = useLiveQuery(() => db.ruleSettings.get({userId:"0"}) ,[]);
 
     //pointMoveSetのため読み込み
-    const [st, stAction] = usePointContentsSelect();
+    //const [st, stAction] = usePointContentsSelect();
     
     //現在のpointのindexを扱うstate
     const [currentPointID, setPointID] = useState(Number(matchData?.currentPointId));
@@ -73,7 +73,7 @@ export const usePointDisplayManage = () => {
             // setCountDifference > 0 ? setOpen(true) : setOpen(false);
 
             //各ボタンstateをポイントIDに紐づく値に更新
-            stAction.pointMoveSet !== undefined && stAction.pointMoveSet(matchData.data[nextPointID]);
+            //stAction.pointMoveSet !== undefined && stAction.pointMoveSet(matchData.data[nextPointID]);
 
             //pointIDStateを更新
             setPointID(nextPointID);
@@ -94,7 +94,7 @@ export const usePointDisplayManage = () => {
 
             //1つ前の入力内容を反映する
             const prevPointID = currentPointID - 1;
-            stAction.pointMoveSet !== undefined && stAction.pointMoveSet(matchData.data[prevPointID]);
+            //stAction.pointMoveSet !== undefined && stAction.pointMoveSet(matchData.data[prevPointID]);
             setPointID(prevPointID);
             matchData.data[prevPointID].pointGetSide == null ? setCanMovePoint(false) : setCanMovePoint(true);
         }

@@ -1,10 +1,10 @@
-import { useState, useContext } from "react";
-import { PointType } from '../common/AppTypes';
+import { useState, useContext, useEffect } from "react";
 import { GlobalStateContext } from "../providers/GlobalStateProvider";
 import { matchDataDBupdate } from '../common/AppFunctions';
+import { db } from "../common/db";
 
 //トグルボタンの各処理
-export const usePointContentsSelect = () => {
+export const usePointContentsSelect = (currentPointID:number) => {
     
     const { globalState, setGlobalState } = useContext(GlobalStateContext);
 
@@ -25,7 +25,28 @@ export const usePointContentsSelect = () => {
     //Shot Detail Courceボタン用state
     const [shotDetailCourceSelectItem, setShotDetailCourceItem] = useState('');
     //ラリー回数カウント用state
-    const [rallyCountItem, setRallyCountItem] = useState(0);  
+    const [rallyCountItem, setRallyCountItem] = useState(0);
+
+    //currentPointIDの変更毎にDBの内容を各ボタンStateへ反映
+    useEffect(() => {
+        db.matchData.get({ id: globalState.recodingMatchId })
+        .then((md) => {
+            if (md !== undefined) {
+                setServeItem(md.data[currentPointID].serve);
+                setServeCourceItem(md.data[currentPointID].serveCource);
+                setServeTypeItem(md.data[currentPointID].serveType);
+                setPointCategoryItem(md.data[currentPointID].pointCategory);
+                setShotTypeItem(md.data[currentPointID].shotType);
+                setShotSpinTypeItem(md.data[currentPointID].shotSpinType);
+                setShotDetailItem(md.data[currentPointID].shotDetail);
+                setShotDetailCourceItem(md.data[currentPointID].shotDetailCource);
+                setRallyCountItem(md.data[currentPointID].rallyCount);                
+            }
+        })
+        .catch((error) => {
+            console.error("error" + error);
+        })
+    }, [currentPointID]);
 
     //Serveボタン押下処理
     const serveChange = (
@@ -135,24 +156,8 @@ export const usePointContentsSelect = () => {
         }      
     };
 
-    //対象ポイント時の各種stateをセット
-    const pointMoveSet = (point:PointType):void => {
-        //setPointGetSide(String(point.pointGetSide));
-        setServeItem(point.serve === undefined ? "" : String(point.serve));   //未選択時のdisabled対応
-        setServeCourceItem(String(point.serveCource));
-        setServeTypeItem(String(point.serveType));
-        setPointCategoryItem(point.pointCategory === undefined ? "" : String(point.pointCategory));   //未選択時のdisabled対応
-        setShotTypeItem(String(point.shotType));
-        setShotSpinTypeItem(String(point.shotSpinType));
-        setShotDetailItem(String(point.shotDetail));
-        setShotDetailCourceItem(String(point.shotDetailCource));
-        setRallyCountItem(point.rallyCount === undefined ? 0 : point.rallyCount);
-    };
-
-
     return ([
         {
-            //pointGetSide,
             serveSelectItem,
             serveCourceSelectItem,
             serveTypeSelectItem,
@@ -163,7 +168,6 @@ export const usePointContentsSelect = () => {
             shotDetailCourceSelectItem,
             rallyCountItem,
         },{
-            //pointGetSideChange,
             serveChange,
             serveCourceChange,
             serveTypeChange,
@@ -174,59 +178,6 @@ export const usePointContentsSelect = () => {
             shotDetailCourceChange,
             rallyCountAdd,
             rallyCountSubtract,
-            pointMoveSet,
         }
     ]);
 };
-
-
-    //const globalState = useLiveQuery(() => db.globalState.get({userId:"0"}) ,[]);
-    //console.log(globalState);
-    //const targetId = !!globalState ? globalState?.recodingMatchId : 0;
-    //const matchData = useLiveQuery(() => db.matchData.get({id:globalState?.recodingMatchId}) ,[]);
-    
-    //console.log(matchData);
-
-
-
-    
-
-    //ポイント取得サイドボタンボタン押下処理
-    // const pointGetSideChange = (
-    //     newPointGetSide: string
-    // ) => {
-    //     if(newPointGetSide === pointGetSide) newPointGetSide = "";
-    //     setPointGetSide(newPointGetSide);
-    //     pointArray.pointGetSide = newPointGetSide;
-    //     //次へボタンの制御　ポイント取得サイドが選択状態ならば移行可能
-    //     (newPointGetSide === null || newPointGetSide === "") ? setCanMovePoint(false) : setCanMovePoint(true);
-    // };
-
-    // //ポイント取得サイドボタンボタン押下処理
-    // const pointGetSideChange = (
-    //     event: React.MouseEvent<HTMLElement>,
-    //     newPointGetSide: string,
-    // ) => {
-    //     setPointGetSide(newPointGetSide);
-    //     pointArray.pointGetSide = newPointGetSide;
-    //     //次へボタンの制御　ポイント取得サイドが選択状態ならば移行可能
-    //     newPointGetSide == null ? setCanMovePoint(false) : setCanMovePoint(true);
-    // };
-
-
-    //db更新用関数　作成中に挫折
-    // type currentPointUpdataArg = {
-    //     itemName: String,
-    //     value: String,
-    // }
-    
-    // const currentPointUpdata = (arg:currentPointUpdataArg[]) => {
-    //     arg.map((ele) => {
-    //         const data = matchData;
-    //         if(data !== undefined){
-    //             data.data[Number(matchData?.currentPointId)][(ele.itemName.toString())] = "";
-    //             data.data[Number(matchData?.currentPointId)]["serveType"] = "";
-    //         }
-    //         db.matchData.update(Number(globalState?.recodingMatchId),{data});
-    //     });
-    // }

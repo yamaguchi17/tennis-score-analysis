@@ -7,12 +7,13 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircOutlineleIcon from '@mui/icons-material/RemoveCircleOutline';
 
-export const PointContents = () => {
+type Props = {
+    currentPointID: number
+}
 
-    const [st, stAction] = usePointContentsSelect();
+export const PointContents: React.VFC<Props> = ({currentPointID}) => {
 
-    console.log(st.serveSelectItem);
-    console.log("レンダリング");
+    const [st, stAction] = usePointContentsSelect(currentPointID);
 
     return (
         <>
@@ -146,18 +147,3 @@ const CustomToggleButton = styled(ToggleButton)({
     //勝手に大文字になる設定を取り除く
     textTransform: 'none'
 });
-
-
-
-{/* <p>Rally Count</p>
-<Box>
-    <IconButton aria-label="Subtract" onClick={stAction.rallyCountSubtract} >
-        <RemoveCircOutlineleIcon color="primary"/>
-    </IconButton>
-    {st.rallyCountItem}
-    <TextField value={rallyCountItem} id="rallyCount" variant="standard" />
-    <input type="number" value={rallyCountItem}/>
-    <IconButton aria-label="add" onClick={stAction.rallyCountAdd} >
-        <AddCircleOutlineIcon color={"primary"}/>
-    </IconButton>
-</Box> */}

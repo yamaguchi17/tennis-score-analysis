@@ -11,6 +11,9 @@ let numberOfTieBreakPoint:number = 0;
 let winnerScore: scoreType;
 let loserScore: scoreType;
 
+//ゲーム取得サイドの宣言
+let gameGetSide: string;
+
 //タイブレーク判定,デュース回数,サーバーサイド初期化
 let enabledTieBreak:boolean = false;
 let deuceCountInGame:number = 0;
@@ -23,7 +26,8 @@ export const PointSet = (point:PointType["point"], pointGetSide:string, ruleSett
     PointSetInit(point,pointGetSide,ruleSettings);
     
     //ポイントカウントアップ処理
-    AddPointCount();
+    AddPointCount(pointGetSide);
+    console.log(gameGetSide);
 
     //戻り値にポイント計算後（次の表示するべきポイント数）をセット
     return PointReturnSet(pointGetSide);
@@ -71,10 +75,12 @@ const PointSetInit = (point:PointType["point"], pointGetSide:string, ruleSetting
     //現在のサーバーサイドを反映
     serverSide = point.serverSide;
 
+    //ゲーム取得サイドの初期化
+    gameGetSide = "";
 }
 
 //ポイントカウントアップ処理
-const AddPointCount = ():void => {
+const AddPointCount = (pointGetSide:string):void => {
     //タイブレークの場合
     if(enabledTieBreak){
         //ポイントカウントアップ
@@ -86,18 +92,18 @@ const AddPointCount = ():void => {
             switch (deuceMode) {
                 //ノーアドモードの場合　そのままゲーム獲得
                 case DEUCE_MODE.NO_AD:
-                    AddGameCount();
+                    AddGameCount(pointGetSide);
                     break;
                 //デュースモードの場合　2ポイント差がつけばゲーム獲得
                 case DEUCE_MODE.DEUCE:
                     if(winnerScore.pointCount - Number(loserScore.pointCount) >= 2){
-                        AddGameCount();
+                        AddGameCount(pointGetSide);
                     }
                     break;
                 //セミアドモードの場合　2ポイント差　または　タイブレーク獲得ポイント超えでゲーム獲得
                 case DEUCE_MODE.SEMI_AD:
                     if((winnerScore.pointCount - Number(loserScore.pointCount) >= 2) || winnerScore.pointCount > numberOfTieBreakPoint){
-                        AddGameCount();
+                        AddGameCount(pointGetSide);
                     }
                     break;
             }
@@ -121,13 +127,13 @@ const AddPointCount = ():void => {
         }
         //得点者が40で失点者が30以下ならゲーム獲得
         else if(winnerScore.pointCount === 40 && loserScore.pointCount < 40 && loserScore.pointCount !== "Ad"){
-            AddGameCount();
+            AddGameCount(pointGetSide);
         }
         //デュース処理（ノーアド含む）
         else{     
             //失点者がアドバンテージでない　かつ　ノーアドモードまたはセミアドモードでデュース1回実施済みならゲーム獲得
             if(loserScore.pointCount !== "Ad" && (deuceMode === DEUCE_MODE.NO_AD || (deuceMode === DEUCE_MODE.SEMI_AD && deuceCountInGame >= 2))){
-                AddGameCount();
+                AddGameCount(pointGetSide);
             }
             //デュースモードまたはセミアドモードでデュース2回目未実施
             else if(deuceMode === DEUCE_MODE.DEUCE || (deuceMode === DEUCE_MODE.SEMI_AD && deuceCountInGame < 2)){
@@ -141,7 +147,7 @@ const AddPointCount = ():void => {
                 }
                 //獲得者のポイントがアドバンテージならゲーム獲得
                 else if(winnerScore.pointCount === "Ad"){
-                    AddGameCount();
+                    AddGameCount(pointGetSide);
                 }
             }
         }
@@ -149,7 +155,7 @@ const AddPointCount = ():void => {
 }
 
 //ゲームカウントアップ処理
-const AddGameCount = () => {
+const AddGameCount = (pointGetSide:string) => {
     //ポイントをリセットにする
     winnerScore.pointCount = 0;
     loserScore.pointCount = 0;
@@ -158,6 +164,9 @@ const AddGameCount = () => {
 
     //ゲームカウントを1上げる
     winnerScore.gameCount++;
+
+    //ゲーム取得サイドを設定
+    gameGetSide = pointGetSide;
 
     //サーバーサイドを変更
     serverSide === "player1" ? serverSide = "player2" : serverSide = "player1";
@@ -203,7 +212,8 @@ const PointReturnSet = (pointGetSide:string):PointType["point"] => {
             setCountB: loserScore.setCount,
             enabledTieBreak: enabledTieBreak,
             deuceCountInGame: deuceCountInGame,
-            serverSide: serverSide
+            serverSide: serverSide,
+            gameGetSide: gameGetSide,
         };
     } else {
         nextPoint = {
@@ -215,7 +225,8 @@ const PointReturnSet = (pointGetSide:string):PointType["point"] => {
             setCountB: winnerScore.setCount,
             enabledTieBreak: enabledTieBreak,
             deuceCountInGame: deuceCountInGame,
-            serverSide: serverSide
+            serverSide: serverSide,
+            gameGetSide: gameGetSide,
         };
     }
 

@@ -57,6 +57,11 @@ export const App: FC = () => {
     //matchDataテーブルに新規レコードを追加
     db.delete();
   }
+
+  const handleClick6 = () => {
+    setDisplayType((prev: number) => prev === DISPLAY_TYPES.MAIN ? prev = DISPLAY_TYPES.RESULT : prev = DISPLAY_TYPES.MAIN);
+  }
+
   //---------テスト用処理---------------//
 
 
@@ -130,6 +135,7 @@ export const App: FC = () => {
       <Button onClick={handleClick3} variant="outlined" >globalState初期化</Button>
       <Button onClick={handleClick4} variant="outlined" >matchDataレコード追加</Button>
       <Button onClick={handleClick5} variant="outlined" >DB削除</Button>
+      <Button onClick={handleClick6} variant="outlined" >Home ⇔ Result</Button>
       <SContainer maxWidth="sm">
         <DisplayTypeExport />
       </SContainer>

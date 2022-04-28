@@ -82,7 +82,7 @@ export type ruleSetType = {
 //   data:ruleSetType,
 // }
 
-//グローバルstateの型定義
+//グローバルstateテーブルの型定義
 export type globalStateType = {
     userId: string,
     isLoggedIn: boolean,
@@ -91,21 +91,35 @@ export type globalStateType = {
     displayResultId: number,
 }
 
+//グローバルルールテーブルの型定義
 export type globalRuleSetType = {userId:string} & ruleSetType;
 
+//マッチデータテーブルの型定義
 export type MatchDataType = {
   id?:number,
   currentPointId: number,
   data:PointType[],
 }
 
+//リザルトデータテーブルのbaseDataの型定義
+type ResultBaseDataType = {
+    macthName: string,
+    macthDate: Date,
+    player1Name: string,
+    player2Name: string,
+    gameCount: number[][], 
+    totalPoint: number,
+  }
+
+//リザルトデータテーブルのstatuデータの要素の型定義
 type valueAndRateType = {
     value: number,
     rate: string,
     rateType: string,
 }
 
-type resultDataStatuType = {
+//リザルトデータテーブルのstatuデータの型定義
+export type resultDataStatuType = {
     //基本スタッツ
     pointWon: valueAndRateType,
     error: valueAndRateType,
@@ -122,9 +136,7 @@ type resultDataStatuType = {
     serve2ndWon: valueAndRateType,
     //ラリー数
     rally5orUnderWon: valueAndRateType,
-    rally5orUnderError: valueAndRateType,
     rallyOver5Won: valueAndRateType,
-    rallyOver5Error: valueAndRateType,
     //ショット別
     serveWon: valueAndRateType,
     returnWon: valueAndRateType,
@@ -178,16 +190,10 @@ type resultDataStatuType = {
     centerError: valueAndRateType,
 }
 
+//リザルトデータテーブルの型定義
 export type ResultDataType = {
   id:number,
-  baseData:{
-    macthName: string,
-    macthDate: Date,
-    player1Name: string,
-    player2Name: string,
-    gameCount: number[][], 
-    totalPoint: number,
-  },
+  baseData: ResultBaseDataType,
   statuPlayer1:resultDataStatuType,
   statuPlayer2:resultDataStatuType,
 }
@@ -254,84 +260,103 @@ export const ruleSetDefaultDataGet = () => {
     return(ruleSetData);
 }
 
-
-
-const StatuTypeBasic = {value:0, rate:"", rateType:"basic"};
-const StatuTypeExtra = {value:0, rate:"", rateType:"extra"}
+//ResultBaseDataTypeのデフォルト値を渡す
+export const ResultBaseDefaultDataGet = () => {
+    const ResultBaseData:ResultBaseDataType = {
+        macthName: "",
+        macthDate: new Date(),
+        player1Name: "",
+        player2Name: "",
+        gameCount: [[]],
+        totalPoint: 0,
+    };
+    return(ResultBaseData);
+}
 
 //resultDataStatuTypeのデフォルト値を渡す
+// const StatuTypeBasic = {value:0, rate:"", rateType:"basic"};
+// const StatuTypeExtra = {value:0, rate:"", rateType:"extra"};
+// const StatuTypeServe = {value:0, rate:"", rateType:"serve"};
 export const resultDataStatuDefaultDataGet = () => {
     const resultDataStatu:resultDataStatuType = {
         //基本スタッツ
-        pointWon: StatuTypeBasic,
-        error: StatuTypeBasic,
-        winner: StatuTypeBasic,
-        nieceShot: StatuTypeBasic,
-        totalPointWon: StatuTypeBasic,
+        pointWon: {value:0, rate:"", rateType:"basic"},
+        error: {value:0, rate:"", rateType:"basic"},
+        winner: {value:0, rate:"", rateType:"basic"},
+        nieceShot: {value:0, rate:"", rateType:"basic"},
+        totalPointWon: {value:0, rate:"", rateType:"basic"},
         //サーブ
-        serveCount: StatuTypeBasic,
-        serviceAce: StatuTypeBasic,
-        doubleFault: StatuTypeBasic,
-        serve1stIn: StatuTypeExtra,
-        serve2ndIn: StatuTypeExtra,
-        serve1stWon: StatuTypeExtra,
-        serve2ndWon: StatuTypeExtra,
+        serveCount: {value:0, rate:"", rateType:"basic"},
+        serviceAce: {value:0, rate:"", rateType:"basic"},
+        doubleFault: {value:0, rate:"", rateType:"basic"},
+        serve1stIn: {value:0, rate:"", rateType:"serve"},
+        serve2ndIn: {value:0, rate:"", rateType:"extra"},
+        serve1stWon: {value:0, rate:"", rateType:"extra"},
+        serve2ndWon: {value:0, rate:"", rateType:"extra"},
         //ラリー数
-        rally5orUnderWon: StatuTypeBasic,
-        rally5orUnderError: StatuTypeBasic,
-        rallyOver5Won: StatuTypeBasic,
-        rallyOver5Error: StatuTypeBasic,
+        rally5orUnderWon: {value:0, rate:"", rateType:"basic"},
+        rallyOver5Won: {value:0, rate:"", rateType:"basic"},
         //ショット別
-        serveWon: StatuTypeBasic,
-        returnWon: StatuTypeBasic,
-        returnError: StatuTypeBasic,
-        strokeWon: StatuTypeBasic,
-        strokeError: StatuTypeBasic,
-        volleyWon: StatuTypeBasic,
-        volleyError: StatuTypeBasic,
-        smashWon: StatuTypeBasic,
-        smashError: StatuTypeBasic,
-        lobWon: StatuTypeBasic,
-        lobError: StatuTypeBasic,
-        dropWon: StatuTypeBasic,
-        dropError: StatuTypeBasic,
+        serveWon: {value:0, rate:"", rateType:"basic"},
+        returnWon: {value:0, rate:"", rateType:"basic"},
+        returnError: {value:0, rate:"", rateType:"basic"},
+        strokeWon: {value:0, rate:"", rateType:"basic"},
+        strokeError: {value:0, rate:"", rateType:"basic"},
+        volleyWon: {value:0, rate:"", rateType:"basic"},
+        volleyError: {value:0, rate:"", rateType:"basic"},
+        smashWon: {value:0, rate:"", rateType:"basic"},
+        smashError: {value:0, rate:"", rateType:"basic"},
+        lobWon: {value:0, rate:"", rateType:"basic"},
+        lobError: {value:0, rate:"", rateType:"basic"},
+        dropWon: {value:0, rate:"", rateType:"basic"},
+        dropError: {value:0, rate:"", rateType:"basic"},
         //サーブ割合
-        serveCourceWide: StatuTypeExtra,
-        serveCourceBody: StatuTypeExtra,
-        serveCourceCenter: StatuTypeExtra,
-        serveCourceFore: StatuTypeExtra,
-        serveCourceBack: StatuTypeExtra,
-        serveTypeFlat: StatuTypeExtra,
-        serveTypeSlice: StatuTypeExtra,
-        serveTypeSpin: StatuTypeExtra,
-        serveTypeTopSlice: StatuTypeExtra,
+        serveCourceWide: {value:0, rate:"", rateType:"serve"},
+        serveCourceBody: {value:0, rate:"", rateType:"serve"},
+        serveCourceCenter: {value:0, rate:"", rateType:"serve"},
+        serveCourceFore: {value:0, rate:"", rateType:"serve"},
+        serveCourceBack: {value:0, rate:"", rateType:"serve"},
+        serveTypeFlat: {value:0, rate:"", rateType:"serve"},
+        serveTypeSlice: {value:0, rate:"", rateType:"serve"},
+        serveTypeSpin: {value:0, rate:"", rateType:"serve"},
+        serveTypeTopSlice: {value:0, rate:"", rateType:"serve"},
         //ファア・バック
-        foreReturnWon: StatuTypeBasic,
-        foreReturnError: StatuTypeBasic,
-        backReturnWon: StatuTypeBasic,
-        backReturnError: StatuTypeBasic,
-        foreStrokeWon: StatuTypeBasic,
-        foreStrokeError: StatuTypeBasic,
-        backStrokeWon: StatuTypeBasic,
-        backStrokeError: StatuTypeBasic,
-        foreVolleyWon: StatuTypeBasic,
-        foreVolleyError: StatuTypeBasic,
-        backVolleyWon: StatuTypeBasic,
-        backVolleyError: StatuTypeBasic, 
+        foreReturnWon: {value:0, rate:"", rateType:"basic"},
+        foreReturnError: {value:0, rate:"", rateType:"basic"},
+        backReturnWon: {value:0, rate:"", rateType:"basic"},
+        backReturnError: {value:0, rate:"", rateType:"basic"},
+        foreStrokeWon: {value:0, rate:"", rateType:"basic"},
+        foreStrokeError: {value:0, rate:"", rateType:"basic"},
+        backStrokeWon: {value:0, rate:"", rateType:"basic"},
+        backStrokeError: {value:0, rate:"", rateType:"basic"},
+        foreVolleyWon: {value:0, rate:"", rateType:"basic"},
+        foreVolleyError: {value:0, rate:"", rateType:"basic"},
+        backVolleyWon: {value:0, rate:"", rateType:"basic"},
+        backVolleyError: {value:0, rate:"", rateType:"basic"}, 
         //回転種別
-        spinWon: StatuTypeBasic,
-        spinError: StatuTypeBasic,
-        sliceWon: StatuTypeBasic,
-        sliceError: StatuTypeBasic,
-        flatWon: StatuTypeBasic,
-        flatError: StatuTypeBasic,  
+        spinWon: {value:0, rate:"", rateType:"basic"},
+        spinError: {value:0, rate:"", rateType:"basic"},
+        sliceWon: {value:0, rate:"", rateType:"basic"},
+        sliceError: {value:0, rate:"", rateType:"basic"},
+        flatWon: {value:0, rate:"", rateType:"basic"},
+        flatError: {value:0, rate:"", rateType:"basic"},  
         //コース
-        crossWon: StatuTypeBasic,
-        crossError: StatuTypeBasic,
-        straightWon: StatuTypeBasic,
-        straightError: StatuTypeBasic,
-        centerWon: StatuTypeBasic,
-        centerError: StatuTypeBasic,
+        crossWon: {value:0, rate:"", rateType:"basic"},
+        crossError: {value:0, rate:"", rateType:"basic"},
+        straightWon: {value:0, rate:"", rateType:"basic"},
+        straightError: {value:0, rate:"", rateType:"basic"},
+        centerWon: {value:0, rate:"", rateType:"basic"},
+        centerError: {value:0, rate:"", rateType:"basic"},
     };
     return(resultDataStatu);
+}
+
+export const resultDefaultDataGet = () => {
+    const resultData:ResultDataType = {
+        id:0,
+        baseData: ResultBaseDefaultDataGet(),
+        statuPlayer1:resultDataStatuDefaultDataGet(),
+        statuPlayer2:resultDataStatuDefaultDataGet(),
+    };
+    return(resultData);
 }

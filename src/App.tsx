@@ -1,12 +1,13 @@
 import { FC, useState, useLayoutEffect, useContext,  } from "react";
-import { Main } from "./Main";
-import { Record } from "./Record";
-import { Result } from "./Result";
+import { Main } from "./pages/Main";
+import { Record } from "./pages/Record";
+import { ResultCalc } from "./pages/ResultCalc";
+import { ResultContens } from "./pages/ResultContens";
 import { DisplayTypeContext } from "./providers/DisplayTypeProvider";
 import { GlobalStateContext } from "./providers/GlobalStateProvider";
 import { DISPLAY_TYPES } from "./common/AppConst";
-import { TestArea } from "./TextArea";
-import { ButtonAppBar } from "./Header"
+import { TestArea } from "./components/TextArea";
+import { ButtonAppBar } from "./components/Header"
 import CssBaseline from '@mui/material/CssBaseline';
 import { Button } from "@mui/material";
 import Container from '@mui/material/Container';
@@ -27,7 +28,7 @@ export const App: FC = () => {
     setDisplayType((prev: number) => prev === DISPLAY_TYPES.MAIN ? prev = DISPLAY_TYPES.RECORD : prev = DISPLAY_TYPES.MAIN);
   };
   const handleClick2 = () => {
-    setDisplayType((prev: number) => prev === DISPLAY_TYPES.RECORD ? prev = DISPLAY_TYPES.RESULT : prev = DISPLAY_TYPES.RECORD);
+    setDisplayType((prev: number) => prev === DISPLAY_TYPES.RECORD ? prev = DISPLAY_TYPES.RESULT_CALC : prev = DISPLAY_TYPES.RECORD);
   };
   const handleClick3 = () => {
     const newGState:globalStateType = {
@@ -59,7 +60,7 @@ export const App: FC = () => {
   }
 
   const handleClick6 = () => {
-    setDisplayType((prev: number) => prev === DISPLAY_TYPES.MAIN ? prev = DISPLAY_TYPES.RESULT : prev = DISPLAY_TYPES.MAIN);
+    setDisplayType((prev: number) => prev === DISPLAY_TYPES.MAIN ? prev = DISPLAY_TYPES.RESULT_CONTENTS : prev = DISPLAY_TYPES.MAIN);
   }
 
   //---------テスト用処理---------------//
@@ -120,7 +121,8 @@ export const App: FC = () => {
     switch (displayType) {
       case DISPLAY_TYPES.MAIN: return <Main />;
       case DISPLAY_TYPES.RECORD: return <Record />;
-      case DISPLAY_TYPES.RESULT: return <Result />;
+      case DISPLAY_TYPES.RESULT_CALC: return <ResultCalc />;
+      case DISPLAY_TYPES.RESULT_CONTENTS: return <ResultContens />;
       case DISPLAY_TYPES.EDIT: return <TestArea />;
       default: return <Main />;
     }

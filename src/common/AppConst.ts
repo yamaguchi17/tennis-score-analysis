@@ -1,8 +1,9 @@
 export const DISPLAY_TYPES = {
     MAIN: 0,
     RECORD: 1,
-    RESULT: 2,
-    EDIT: 3
+    RESULT_CALC: 2,
+    RESULT_CONTENTS: 3,
+    EDIT: 4
 };
 export const TIE_BREAK_MODE = {
     TIE_BREAK: "Tie Break",

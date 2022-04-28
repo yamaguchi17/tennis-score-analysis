@@ -1,13 +1,13 @@
 import { useState, useLayoutEffect, useContext } from "react";
-import { PointType, pointDefaultData } from './common/AppTypes';
-import { DISPLAY_TYPES } from "./common/AppConst";
-import { matchDataDBupdate } from './common/AppFunctions';
-import { db } from "./common/db";
+import { PointType, pointDefaultData } from '../../common/AppTypes';
+import { DISPLAY_TYPES } from "../../common/AppConst";
+import { matchDataDBupdate } from '../../common/AppFunctions';
+import { db } from "../../common/db";
 import { PointSet } from "./PointSet";
 import { DisplayResultDialog } from "./Dialog";
-import { GlobalStateContext } from "./providers/GlobalStateProvider";
-import { RuleSettingsContext } from "./providers/RuleSettingsProvider";
-import { DisplayTypeContext } from "./providers/DisplayTypeProvider";
+import { GlobalStateContext } from "../../providers/GlobalStateProvider";
+import { RuleSettingsContext } from "../../providers/RuleSettingsProvider";
+import { DisplayTypeContext } from "../../providers/DisplayTypeProvider";
 import styled from '@emotion/styled'
 import IconButton from "@mui/material/IconButton";
 import Container from "@mui/material/Container";
@@ -42,8 +42,8 @@ export const PointDisplay: React.VFC<Props> = ({currentPointID, setPointID}) => 
     const dialogClose = (value: string) => {
         setOpen(false);
         setSelectedValue(value);
-        if (value === "Result") setDisplayType(DISPLAY_TYPES.RESULT);
-    };     
+        if (value === "Result") setDisplayType(DISPLAY_TYPES.RESULT_CALC);
+    };
 
     //DBからcurrentPointId,現在のポイント内容を取得
     useLayoutEffect(() => {

@@ -1,8 +1,8 @@
 import { render } from 'react-dom';
-import { App } from './components/App';
-import { DisplayTypeProvider } from "./components/providers/DisplayTypeProvider";
-import { RuleSettingsProvider } from "./components/providers/RuleSettingsProvider";
-import { GlobalStateProvider } from "./components/providers/GlobalStateProvider";
+import { App } from './App';
+import { DisplayTypeProvider } from "./providers/DisplayTypeProvider";
+import { RuleSettingsProvider } from "./providers/RuleSettingsProvider";
+import { GlobalStateProvider } from "./providers/GlobalStateProvider";
 
 const rootElement = document.getElementById("root");
 

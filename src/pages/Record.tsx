@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { RuleSettings } from "../components/RuleSettings"
-import { PointContents } from "./PointContents";
-import { PointDisplay } from "./PointDisplay";
+import { PointContents } from "../components/Record/PointContents";
+import { PointDisplay } from "../components/Record/PointDisplay";
 
 export const Record = () => {
 

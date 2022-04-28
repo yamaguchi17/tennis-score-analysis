@@ -1,4 +1,4 @@
-import { usePointContentsSelect } from "./fooks/usePointContentsSelect";
+import { usePointContentsSelect } from "../../fooks/usePointContentsSelect";
 import styled from '@emotion/styled'
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";

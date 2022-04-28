@@ -1,11 +1,11 @@
 import { useContext } from "react";
-import { DisplayTypeContext } from "./providers/DisplayTypeProvider";
-import { GlobalStateContext } from "./providers/GlobalStateProvider";
-import { RuleSettingsContext } from "./providers/RuleSettingsProvider";
+import { DisplayTypeContext } from "../providers/DisplayTypeProvider";
+import { GlobalStateContext } from "../providers/GlobalStateProvider";
+import { RuleSettingsContext } from "../providers/RuleSettingsProvider";
 import { RuleSettings } from "../components/RuleSettings"
-import { DISPLAY_TYPES } from "./common/AppConst";
-import { PointType,pointDefaultData} from './common/AppTypes';
-import { db } from "./common/db";
+import { DISPLAY_TYPES } from "../common/AppConst";
+import { PointType,pointDefaultData} from '../common/AppTypes';
+import { db } from "../common/db";
 import styled from '@emotion/styled'
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";

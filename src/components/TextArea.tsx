@@ -1,6 +1,6 @@
 import { ChangeEvent, useState, useCallback } from "react";
 import { MemoList } from "./MemoList";
-import { useMemoList } from "./fooks/useMemoList";
+import { useMemoList } from "../fooks/useMemoList";
 import styled from '@emotion/styled'
 import TextField from '@mui/material/TextField';
 import Button from "@mui/material/Button";

@@ -1,8 +1,8 @@
-import { useState, useEffect, useContext,  } from "react";
-import { TIE_BREAK_MODE, DEUCE_MODE } from "./common/AppConst";
-import { ruleSetType,globalRuleSetType, ruleSetDefaultDataGet } from "./common/AppTypes";
-import { RuleSettingsContext } from "./providers/RuleSettingsProvider";
-import { db } from "./common/db";
+import { useState, useLayoutEffect, useContext,  } from "react";
+import { TIE_BREAK_MODE, DEUCE_MODE } from "../common/AppConst";
+import { ruleSetType,globalRuleSetType, ruleSetDefaultDataGet } from "../common/AppTypes";
+import { RuleSettingsContext } from "../providers/RuleSettingsProvider";
+import { db } from "../common/db";
 import styled from '@emotion/styled'
 import Box from "@mui/material/Box";
 import ToggleButton from '@mui/material/ToggleButton';
@@ -22,8 +22,17 @@ export const RuleSettings = () => {
     //stateのデフォルト値を取得
     const ruleSetDefaultData:globalRuleSetType = ruleSetDefaultDataGet();
 
+    //ruleSettings State
+    const [ tieBreakMode, setTieBreakMode] = useState(ruleSettings.tieBreakMode);
+    const [ deuceMode, setDeuceMode] = useState(ruleSettings.deuceMode);
+    const [ numberOfGames, setNumberOfGames] = useState(ruleSettings.numberOfGames);
+    const [ numberOfTieBreakPoint, setNumberOfTieBreakPoint] = useState(ruleSettings.numberOfTieBreakPoint);
+    const [ playerNameA, setPlayerNameA] = useState(ruleSettings.playerNameA);
+    const [ playerNameB, setPlayerNameB] = useState(ruleSettings.playerNameB);
+    const [ selectedServer, setSelectedServer] = useState(ruleSettings.selectedServer);    
+
     //ruleSettingsテーブルにレコードが存在しなければ、初期値レコードを追加。あればcontextに反映
-    useEffect(() => {
+    useLayoutEffect(() => {
         db.ruleSettings.get({userId: "0"})
             .then((rs)=>{
                 if(rs === undefined){
@@ -39,21 +48,20 @@ export const RuleSettings = () => {
                         selectedServer: rs.selectedServer,
                     }
                     setRuleSettings(newState);
+
+                    setTieBreakMode(rs.tieBreakMode);
+                    setDeuceMode(rs.deuceMode);
+                    setNumberOfGames(rs.numberOfGames);
+                    setNumberOfTieBreakPoint(rs.numberOfTieBreakPoint);
+                    setPlayerNameA(rs.playerNameA);
+                    setPlayerNameB(rs.playerNameB);
+                    setSelectedServer(rs.selectedServer);
                 }
             })
             .catch((error)=>{
                 console.error("error" + error);
             });
         }, []);
-
-    //ruleSettings State
-    const [ tieBreakMode, setTieBreakMode] = useState(ruleSettings.tieBreakMode);
-    const [ deuceMode, setDeuceMode] = useState(ruleSettings.deuceMode);
-    const [ numberOfGames, setNumberOfGames] = useState(ruleSettings.numberOfGames);
-    const [ numberOfTieBreakPoint, setNumberOfTieBreakPoint] = useState(ruleSettings.numberOfTieBreakPoint);
-    const [ playerNameA, setPlayerNameA] = useState(ruleSettings.playerNameA);
-    const [ playerNameB, setPlayerNameB] = useState(ruleSettings.playerNameB);
-    const [ selectedServer, setSelectedServer] = useState(ruleSettings.selectedServer);
 
     //プレイヤー1の名前設定処理
     const playerNameAChange = (event:React.ChangeEvent<HTMLInputElement>) => {

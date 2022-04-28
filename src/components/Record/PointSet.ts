@@ -1,5 +1,5 @@
-import { PointType, scoreType, ruleSetType } from "./common/AppTypes";
-import { DEUCE_MODE, TIE_BREAK_MODE } from "./common/AppConst";
+import { PointType, scoreType, ruleSetType } from "../../common/AppTypes";
+import { DEUCE_MODE, TIE_BREAK_MODE } from "../../common/AppConst";
 
 //ルール設定変数の初期化
 let tieBreakMode:string = "";
@@ -27,7 +27,6 @@ export const PointSet = (point:PointType["point"], pointGetSide:string, ruleSett
     
     //ポイントカウントアップ処理
     AddPointCount(pointGetSide);
-    console.log(gameGetSide);
 
     //戻り値にポイント計算後（次の表示するべきポイント数）をセット
     return PointReturnSet(pointGetSide);

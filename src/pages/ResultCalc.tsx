@@ -76,12 +76,9 @@ function baseDataSet(md: MatchDataType, rd: ResultDataType, ruleSettings:ruleSet
     //ゲームカウントの設定
     md.data.slice(-1)[0].point.setCountA.map((valueA,index)=> {
         const valueB = md.data.slice(-1)[0].point.setCountB[index];
+
         if(!(valueA === 0 && valueB === 0)){
-            if(rd.baseData.gameCount[0] === []){
-                rd.baseData.gameCount[0] = [valueA,valueB];
-            }else{
-                rd.baseData.gameCount.push([valueA,valueB]);
-            }
+            rd.baseData.gameCount.push([valueA,valueB]);
         }
     });
 }
@@ -357,8 +354,8 @@ function statuCalc(md: MatchDataType, rd: ResultDataType):void {
         else {
             switch (key) {
                 case 'serve2ndIn':
-                    val1.rate = (100 * val1.value / rd.statuPlayer1.serveCount.value - rd.statuPlayer1.serve1stIn.value |0).toFixed();
-                    val2.rate = (100 * val2.value / rd.statuPlayer2.serveCount.value - rd.statuPlayer2.serve1stIn.value |0).toFixed();
+                    val1.rate = (100 * val1.value / (rd.statuPlayer1.serveCount.value - rd.statuPlayer1.serve1stIn.value) |0).toFixed();
+                    val2.rate = (100 * val2.value / (rd.statuPlayer2.serveCount.value - rd.statuPlayer2.serve1stIn.value) |0).toFixed();
                     break;
                 case 'serve1stWon':
                     val1.rate = (100 * val1.value / rd.statuPlayer1.serve1stIn.value |0).toFixed();

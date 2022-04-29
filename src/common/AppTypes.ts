@@ -102,7 +102,7 @@ export type MatchDataType = {
 }
 
 //リザルトデータテーブルのbaseDataの型定義
-type ResultBaseDataType = {
+export type ResultBaseDataType = {
     macthName: string,
     macthDate: Date,
     player1Name: string,
@@ -267,7 +267,7 @@ export const ResultBaseDefaultDataGet = () => {
         macthDate: new Date(),
         player1Name: "",
         player2Name: "",
-        gameCount: [[]],
+        gameCount: [],
         totalPoint: 0,
     };
     return(ResultBaseData);

@@ -3,11 +3,12 @@ import { Main } from "./pages/Main";
 import { Record } from "./pages/Record";
 import { ResultCalc } from "./pages/ResultCalc";
 import { ResultContens } from "./pages/ResultContens";
+import { DataManage } from "./pages/DataManage";
 import { DisplayTypeContext } from "./providers/DisplayTypeProvider";
 import { GlobalStateContext } from "./providers/GlobalStateProvider";
 import { DISPLAY_TYPES } from "./common/AppConst";
 import { TestArea } from "./components/TextArea";
-import { ButtonAppBar } from "./components/Header"
+import { Header } from "./components/Header"
 import CssBaseline from '@mui/material/CssBaseline';
 import { Button } from "@mui/material";
 import Container from '@mui/material/Container';
@@ -123,7 +124,7 @@ export const App: FC = () => {
       case DISPLAY_TYPES.RECORD: return <Record />;
       case DISPLAY_TYPES.RESULT_CALC: return <ResultCalc />;
       case DISPLAY_TYPES.RESULT_CONTENTS: return <ResultContens />;
-      case DISPLAY_TYPES.EDIT: return <TestArea />;
+      case DISPLAY_TYPES.DATA_MANAGE: return <DataManage />;
       default: return <Main />;
     }
   };
@@ -131,13 +132,13 @@ export const App: FC = () => {
   return (
     <>
       <CssBaseline />
-      <ButtonAppBar />
-      <Button onClick={handleClick} variant="outlined" sx={{ marginRight: '1rem' }}>Home ⇔ Record</Button>
+      <Header />
+      {/* <Button onClick={handleClick} variant="outlined" sx={{ marginRight: '1rem' }}>Home ⇔ Record</Button>
       <Button onClick={handleClick2} variant="outlined" >Record ⇔ Result</Button>
       <Button onClick={handleClick3} variant="outlined" >globalState初期化</Button>
       <Button onClick={handleClick4} variant="outlined" >matchDataレコード追加</Button>
       <Button onClick={handleClick5} variant="outlined" >DB削除</Button>
-      <Button onClick={handleClick6} variant="outlined" >Home ⇔ Result</Button>
+      <Button onClick={handleClick6} variant="outlined" >Home ⇔ Result</Button> */}
       <SContainer maxWidth="sm">
         <DisplayTypeExport />
       </SContainer>
@@ -148,5 +149,6 @@ export const App: FC = () => {
 const SContainer = styled(Container)({
   display: 'flex',
   flexDirection: 'column',
-  alignItems: 'center'
+  alignItems: 'center',
+  paddingBottom: '3rem',
 });

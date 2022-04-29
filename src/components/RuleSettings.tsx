@@ -13,7 +13,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import SettingsIcon from '@mui/icons-material/Settings';
 import TextField from '@mui/material/TextField';
 import Radio from '@mui/material/Radio';
-
+import Typography from '@mui/material/Typography';
 
 export const RuleSettings = () => {
 
@@ -136,7 +136,7 @@ export const RuleSettings = () => {
 
     return (
         <Box sx={{ width: '22rem', display: 'flex', flexDirection: 'column' }}>
-            <p style={{ display: 'inline-flex', alignItems: 'center', margin: '1.5em 0 0.5em -0.5em' }}><SettingsIcon color={"primary"} />Settings</p>
+            <Typography variant="h6" component="h2" style={{ display: 'inline-flex', alignItems: 'center', margin: '1.5em 0 0.5em -0.5em' }}><SettingsIcon color={"primary"} />Settings</Typography>
             <SSettingsInnerDiv>
                 <SParagraph>Player Name / Server</SParagraph>
                 <div style={{display:"flex"}}>

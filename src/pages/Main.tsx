@@ -2,7 +2,8 @@ import { useContext } from "react";
 import { DisplayTypeContext } from "../providers/DisplayTypeProvider";
 import { GlobalStateContext } from "../providers/GlobalStateProvider";
 import { RuleSettingsContext } from "../providers/RuleSettingsProvider";
-import { RuleSettings } from "../components/RuleSettings"
+import { RuleSettings } from "../components/RuleSettings";
+import { SaveData } from "../components/SaveData";
 import { DISPLAY_TYPES } from "../common/AppConst";
 import { PointType,pointDefaultData} from '../common/AppTypes';
 import { db } from "../common/db";
@@ -48,6 +49,7 @@ export const Main = () => {
                 <SNewGameButton onClick={newGameClick} variant="contained">{globalState.isRecording? "Continue" : "New Game"}</SNewGameButton>
             </SNewGameBox>
             <RuleSettings />
+            <SaveData />
         </>
 
     );
@@ -61,6 +63,7 @@ const SNewGameBox = styled(Box)({
     width: '100%',
     maxWidth: '28rem',
     height: '6rem',
+    marginTop: '1rem',
 });
 const SNewGameButton = styled(Button)({
     display: 'block',

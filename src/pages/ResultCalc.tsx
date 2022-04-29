@@ -77,7 +77,11 @@ function baseDataSet(md: MatchDataType, rd: ResultDataType, ruleSettings:ruleSet
     md.data.slice(-1)[0].point.setCountA.map((valueA,index)=> {
         const valueB = md.data.slice(-1)[0].point.setCountB[index];
         if(!(valueA === 0 && valueB === 0)){
-            rd.baseData.gameCount.push([valueA,valueB]);
+            if(rd.baseData.gameCount[0] === []){
+                rd.baseData.gameCount[0] = [valueA,valueB];
+            }else{
+                rd.baseData.gameCount.push([valueA,valueB]);
+            }
         }
     });
 }

@@ -31,7 +31,7 @@ export const ResultContens: React.VFC = () => {
             <p>gameCount: {resultData.baseData.gameCount.flat()}</p>
             <p>totalPoint: {resultData.baseData.totalPoint}</p>
             <Statu resultData={resultData}/>
-            {JSON.stringify(resultData)}
+            <pre>{JSON.stringify(resultData, null,  4)}</pre>
         </>
     )
 }

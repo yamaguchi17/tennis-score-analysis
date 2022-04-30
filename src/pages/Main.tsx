@@ -3,7 +3,7 @@ import { DisplayTypeContext } from "../providers/DisplayTypeProvider";
 import { GlobalStateContext } from "../providers/GlobalStateProvider";
 import { RuleSettingsContext } from "../providers/RuleSettingsProvider";
 import { RuleSettings } from "../components/RuleSettings";
-import { SaveData } from "../components/SaveData";
+import { SaveData } from "../components/SaveData/SaveData";
 import { DISPLAY_TYPES } from "../common/AppConst";
 import { PointType,pointDefaultData} from '../common/AppTypes';
 import { db } from "../common/db";

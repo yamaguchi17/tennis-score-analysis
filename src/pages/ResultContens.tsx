@@ -28,7 +28,7 @@ export const ResultContens: React.VFC = () => {
 
     return (
         <div style={{width:'22rem'}}>
-            <Typography style={{textAlign:'center'}} variant="h6" component="h2">{resultData.baseData.macthName}</Typography>
+            <Typography style={{textAlign:'center', marginTop:'1rem'}} variant="h6" component="h2">{resultData.baseData.macthName}</Typography>
             <p style={{textAlign:'right'}}>{format(resultData.baseData.macthDate, 'yyyy-MM-dd')}</p>
             <div style={{display:'flex'}}>
                 <p style={{display:'inline-block', width:'33%', textAlign:'center', fontSize:'1.2rem',fontWeight:'bold', color:'hsla(209, 78%, 46%, 1)'}}>{resultData.baseData.player1Name}</p>

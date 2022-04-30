@@ -1,9 +1,9 @@
 import { useState, useEffect, useContext } from "react";
-import { ResultDataType, ResultBaseDataType, resultDefaultDataGet } from '../common/AppTypes';
-import { DISPLAY_TYPES } from "../common/AppConst";
-import { db } from "../common/db";
-import { GlobalStateContext } from "../providers/GlobalStateProvider";
-import { DisplayTypeContext } from "../providers/DisplayTypeProvider";
+import { ResultDataType, ResultBaseDataType, resultDefaultDataGet } from '../../common/AppTypes';
+import { DISPLAY_TYPES } from "../../common/AppConst";
+import { db } from "../../common/db";
+import { GlobalStateContext } from "../../providers/GlobalStateProvider";
+import { DisplayTypeContext } from "../../providers/DisplayTypeProvider";
 import { format } from "date-fns";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';

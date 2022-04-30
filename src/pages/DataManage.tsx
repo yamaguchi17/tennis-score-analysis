@@ -4,19 +4,18 @@ import { DISPLAY_TYPES } from "../common/AppConst";
 import { db } from "../common/db";
 import { GlobalStateContext } from "../providers/GlobalStateProvider";
 import { DisplayTypeContext } from "../providers/DisplayTypeProvider";
+import {SaveDataSingleDelete} from "../components/SaveData/SaveDataSingleDelete";
+import {SaveDataAllDelete} from "../components/SaveData/SaveDataAllDelete";
 import { format } from "date-fns";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import { CardActionArea } from '@mui/material';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import DeleteIcon from '@mui/icons-material/Delete';
-import IconButton from '@mui/material/IconButton';
-import Button from '@mui/material/Button';
 
 export const DataManage: React.VFC = () => {
 
-  const [resultDataArray, setResultDataArray] = useState<ResultDataType[]>([resultDefaultDataGet()]);
+  const [resultDataArray, setResultDataArray] = useState<ResultDataType[]>([]);
 
   //DB読み込み
   useEffect(() => {
@@ -28,24 +27,6 @@ export const DataManage: React.VFC = () => {
       });
   }, []);
 
-  //削除処理
-  const deleteClick = (id:number)=>{
-    db.resultData.delete(id);
-    db.matchData.delete(id);
-    db.resultData.toArray()
-      .then((rd) => {
-        if (rd !== undefined) {
-          setResultDataArray(rd);
-        }
-      });
-  }
-
-  //全削除処理
-  const deleteAllClick = ()=> {
-    //db.delete();
-
-  }
-
   return (
     <div style={{ marginTop: '3rem', width: '22rem' }}>
       <Typography variant="h6" component="h2" style={{ display: 'inline-flex', alignItems: 'center', margin: '0 0 0 -0.5em' }}>
@@ -54,18 +35,17 @@ export const DataManage: React.VFC = () => {
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '1rem' }}>
         {resultDataArray.map((value, index) => {
           return (
-            <div style={{display:'flex'}}>
+            <div style={{display:'flex'}} key={"resultDataCard"+index}>
               <DataCard id={value.id} baseData={value.baseData} key={"dataCard" + index} />
-              <IconButton color="error" aria-label={"delete" + index} component="span" onClick={()=>{deleteClick(value.id)}} >
-                <DeleteIcon />
-              </IconButton>
+              <SaveDataSingleDelete setResultData={setResultDataArray} id={value.id} matchName={value.baseData.macthName}/>
             </div>
           );
         })}
       </div>
-      <div style={{display:'flex', justifyContent:'center', padding:'1rem 0'}}>
+      {/* <div style={{display:'flex', justifyContent:'center', padding:'1rem 0'}}>
         <Button color='error' variant='outlined'>全データを削除</Button>
-      </div>      
+      </div> */}
+      <SaveDataAllDelete setResultData={setResultDataArray}/>
     </div>
   );
 }

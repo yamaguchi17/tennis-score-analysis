@@ -5,7 +5,6 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import Drawer from '@mui/material/Drawer';
@@ -16,6 +15,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import HomeIcon from '@mui/icons-material/Home';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import Divider from '@mui/material/Divider';
 
 export const Header = () => {
 
@@ -56,6 +56,7 @@ export const Header = () => {
             <ListItemText primary={"Home"} />
           </ListItemButton>
         </ListItem>
+        <Divider light/>
         <ListItem key={"DataManage"} sx={{padding:0}}>
           <ListItemButton onClick={()=>{displayChange(DISPLAY_TYPES.DATA_MANAGE)}}>
             <ListItemIcon sx={{minWidth:'2.5rem'}}>

@@ -1,18 +1,20 @@
 import { createContext, useState, useReducer } from "react";
-import { globalStateType } from "../common/AppTypes";
+import { globalStateType, globalStateDefaultDataGet } from "../common/AppTypes";
 
 type GlobalStateContextType = {
   globalState: globalStateType;
   setGlobalState: (globalState: globalStateType) => void;
 }
 
-const globalStateInitial:globalStateType = {
-  userId: "0",
-  isLoggedIn: false,
-  isRecording: false,
-  recodingMatchId: 0,
-  displayResultId: 0,
-}
+const globalStateInitial:globalStateType = globalStateDefaultDataGet();
+
+// const globalStateInitial:globalStateType = {
+//   userId: "0",
+//   isLoggedIn: false,
+//   isRecording: false,
+//   recodingMatchId: 0,
+//   displayResultId: 0,
+// }
 
 export const GlobalStateContext = createContext<GlobalStateContextType>({
   globalState: globalStateInitial,

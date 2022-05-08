@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 import { DisplayTypeContext } from "../providers/DisplayTypeProvider";
-import { DISPLAY_TYPES } from "../common/AppConst";
+import { GlobalStateContext } from "../providers/GlobalStateProvider";
+import { DISPLAY_TYPES,LANG_TYPES } from "../common/AppConst";
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -21,6 +22,7 @@ export const Header = () => {
 
   const [open, setOpne] = useState(false);
   const [ displayType, setDisplayType ] = useContext(DisplayTypeContext);
+  const { globalState, setGlobalState } = useContext(GlobalStateContext);
 
   const toggleDrawer =
     (state: boolean) =>
@@ -53,7 +55,7 @@ export const Header = () => {
             <ListItemIcon sx={{minWidth:'2.5rem'}}>
               <HomeIcon color={"primary"}/>
             </ListItemIcon>
-            <ListItemText primary={"Home"} />
+            <ListItemText primary={globalState.lang === LANG_TYPES.JP ? "ホーム" : "Home"} />
           </ListItemButton>
         </ListItem>
         <Divider light/>
@@ -62,7 +64,7 @@ export const Header = () => {
             <ListItemIcon sx={{minWidth:'2.5rem'}}>
               <AdminPanelSettingsIcon color={"primary"}/>
             </ListItemIcon>
-            <ListItemText primary={"Data Manage"} />
+            <ListItemText primary={globalState.lang === LANG_TYPES.JP ? "データ管理" : "Data Manage"} />
           </ListItemButton>
         </ListItem>        
       </List>

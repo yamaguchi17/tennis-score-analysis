@@ -32,13 +32,7 @@ export const App: FC = () => {
     setDisplayType((prev: number) => prev === DISPLAY_TYPES.RECORD ? prev = DISPLAY_TYPES.RESULT_CALC : prev = DISPLAY_TYPES.RECORD);
   };
   const handleClick3 = () => {
-    const newGState:globalStateType = {
-      userId: "0",
-      isLoggedIn: false,
-      isRecording: false,
-      recodingMatchId: 0,
-      displayResultId: 0,
-    }
+    const newGState:globalStateType = globalStateDefaultDataGet();
     setGlobalState(newGState);
   };
 
@@ -84,6 +78,7 @@ export const App: FC = () => {
             isRecording: globalStateDefaultData.isRecording,
             recodingMatchId: globalStateDefaultData.recodingMatchId,
             displayResultId: globalStateDefaultData.displayResultId,
+            lang: globalStateDefaultData.lang,
           });
         }
         //globalStateテーブルにレコードが存在すれば、Contextに反映
@@ -94,6 +89,7 @@ export const App: FC = () => {
             isRecording: gs.isRecording,
             recodingMatchId: gs.recodingMatchId,
             displayResultId: gs.displayResultId,
+            lang: gs.lang,
           }
           setGlobalState(newState);
         }

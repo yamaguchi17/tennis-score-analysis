@@ -13,7 +13,6 @@ export const Record = () => {
             {/* <RuleSettings /> */}
             <PointContents currentPointID={currentPointID}/>
             <PointDisplay currentPointID={currentPointID} setPointID={setPointID}/>
-            {/* {console.log("レンダリングRecord JSX")} */}
         </>
     );
 }

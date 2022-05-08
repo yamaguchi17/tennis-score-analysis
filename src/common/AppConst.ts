@@ -15,3 +15,7 @@ export const DEUCE_MODE = {
     NO_AD: "No Advantage",
     SEMI_AD: "Semi Advantage"
 };
+export const LANG_TYPES = {
+    JP: 0,
+    EN: 1,
+}

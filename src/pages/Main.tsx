@@ -4,7 +4,7 @@ import { GlobalStateContext } from "../providers/GlobalStateProvider";
 import { RuleSettingsContext } from "../providers/RuleSettingsProvider";
 import { RuleSettings } from "../components/RuleSettings";
 import { SaveData } from "../components/SaveData/SaveData";
-import { DISPLAY_TYPES } from "../common/AppConst";
+import { DISPLAY_TYPES,LANG_TYPES } from "../common/AppConst";
 import { PointType,pointDefaultData} from '../common/AppTypes';
 import { db } from "../common/db";
 import styled from '@emotion/styled'
@@ -46,7 +46,9 @@ export const Main = () => {
     return (
         <>
             <SNewGameBox>
-                <SNewGameButton onClick={newGameClick} variant="contained">{globalState.isRecording? "Continue" : "New Game"}</SNewGameButton>
+                <SNewGameButton onClick={newGameClick} variant="contained">
+                    {globalState.isRecording? (globalState.lang === LANG_TYPES.JP ? "続きを入力" : "Continue") : (globalState.lang === LANG_TYPES.JP ? "スタート" : "New Game")}
+                </SNewGameButton>
             </SNewGameBox>
             <RuleSettings />
             <SaveData />

@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { ResultDataType, ResultBaseDataType, resultDefaultDataGet } from '../../common/AppTypes';
-import { DISPLAY_TYPES } from "../../common/AppConst";
+import { DISPLAY_TYPES, LANG_TYPES } from "../../common/AppConst";
 import { db } from "../../common/db";
 import { GlobalStateContext } from "../../providers/GlobalStateProvider";
 import { DisplayTypeContext } from "../../providers/DisplayTypeProvider";
@@ -13,6 +13,7 @@ import SaveIcon from '@mui/icons-material/Save';
 
 export const SaveData: React.VFC = () => {
 
+  const { globalState, setGlobalState } = useContext(GlobalStateContext);
   const [resultDataArray, setResultDataArray] = useState<ResultDataType[]>([resultDefaultDataGet()]);
 
   //DB読み込み
@@ -29,7 +30,7 @@ export const SaveData: React.VFC = () => {
     <div style={{ marginTop: '3rem', width: '22rem' }}>
 
       <Typography variant="h6" component="h2" style={{ display: 'inline-flex', alignItems: 'center', margin: '0 0 0 -0.5em' }}>
-        <SaveIcon color={"primary"} />Save Data
+        <SaveIcon color={"primary"} />{globalState.lang === LANG_TYPES.JP ? "セーブデータ" : "Save Data"}
       </Typography>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '1rem' }}>
         {resultDataArray.map((value, index) => {

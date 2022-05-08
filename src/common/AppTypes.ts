@@ -1,10 +1,10 @@
-import { DEUCE_MODE, TIE_BREAK_MODE } from './AppConst';
+import { DEUCE_MODE, TIE_BREAK_MODE, LANG_TYPES } from './AppConst';
 
 type pointDetailType = {
     pointCountA: number | string,
     pointCountB: number | string,
     gameCountA: number,
-    gameCountB: number,        
+    gameCountB: number,
     setCountA: number[],
     setCountB: number[],
     enabledTieBreak: boolean,
@@ -89,6 +89,7 @@ export type globalStateType = {
     isRecording: boolean,
     recodingMatchId: number,
     displayResultId: number,
+    lang: number,
 }
 
 //グローバルルールテーブルの型定義
@@ -240,6 +241,7 @@ export const globalStateDefaultDataGet = () => {
         isRecording: false,
         recodingMatchId: 0,
         displayResultId: 0,
+        lang: LANG_TYPES.JP,
     };
     return(globalStateData);
 }

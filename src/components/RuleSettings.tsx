@@ -1,7 +1,8 @@
 import { useState, useLayoutEffect, useContext,  } from "react";
-import { TIE_BREAK_MODE, DEUCE_MODE } from "../common/AppConst";
+import { TIE_BREAK_MODE, DEUCE_MODE, LANG_TYPES } from "../common/AppConst";
 import { ruleSetType,globalRuleSetType, ruleSetDefaultDataGet } from "../common/AppTypes";
 import { RuleSettingsContext } from "../providers/RuleSettingsProvider";
+import { GlobalStateContext } from "../providers/GlobalStateProvider";
 import { db } from "../common/db";
 import styled from '@emotion/styled'
 import Box from "@mui/material/Box";
@@ -18,6 +19,7 @@ import Typography from '@mui/material/Typography';
 export const RuleSettings = () => {
 
     const { ruleSettings, setRuleSettings } = useContext(RuleSettingsContext);
+    const { globalState, setGlobalState } = useContext(GlobalStateContext);
 
     //stateのデフォルト値を取得
     const ruleSetDefaultData:globalRuleSetType = ruleSetDefaultDataGet();
@@ -136,9 +138,10 @@ export const RuleSettings = () => {
 
     return (
         <Box sx={{ width: '22rem', display: 'flex', flexDirection: 'column' }}>
-            <Typography variant="h6" component="h2" style={{ display: 'inline-flex', alignItems: 'center', margin: '1.5em 0 0.5em -0.5em' }}><SettingsIcon color={"primary"} />Settings</Typography>
+            <Typography variant="h6" component="h2" style={{ display: 'inline-flex', alignItems: 'center', margin: '1.5em 0 0.5em -0.5em' }}>
+                <SettingsIcon color={"primary"} />{globalState.lang === LANG_TYPES.JP ? "ルール設定" : "Settings"}</Typography>
             <SSettingsInnerDiv>
-                <SParagraph>Player Name / Server</SParagraph>
+                <SParagraph>{globalState.lang === LANG_TYPES.JP ? "プレイヤー名／サーバー" : "Player Name / Server"}</SParagraph>
                 <div style={{display:"flex"}}>
                     <STextField id="playerNameA" label="Player1 Name" value={playerNameA} variant="outlined" onChange={playerNameAChange} size="small"  inputProps={{ maxLength: 20}}/>
                     <Radio
@@ -161,7 +164,7 @@ export const RuleSettings = () => {
                 </div>
             </SSettingsInnerDiv>
             <SSettingsInnerDiv>
-                <SParagraph>Tie Break Mode</SParagraph>
+                <SParagraph>{globalState.lang === LANG_TYPES.JP ? "セット取得モード" : "Set Get Mode"}</SParagraph>
                 <ToggleButtonGroup
                     color="primary"
                     size="small"
@@ -169,13 +172,13 @@ export const RuleSettings = () => {
                     exclusive
                     onChange={tieBreakModeChange}
                 >
-                    <SToggleButton value={TIE_BREAK_MODE.TIE_BREAK}>{TIE_BREAK_MODE.TIE_BREAK}</SToggleButton>
-                    <SToggleButton value={TIE_BREAK_MODE.GET_FIRST}>{TIE_BREAK_MODE.GET_FIRST}</SToggleButton>
-                    <SToggleButton value={TIE_BREAK_MODE.TWO_GAME_BEHIND}>{TIE_BREAK_MODE.TWO_GAME_BEHIND}</SToggleButton>
+                    <SToggleButton value={TIE_BREAK_MODE.TIE_BREAK}>{globalState.lang === LANG_TYPES.JP ? "タイブレーク" : TIE_BREAK_MODE.TIE_BREAK}</SToggleButton>
+                    <SToggleButton value={TIE_BREAK_MODE.GET_FIRST}>{globalState.lang === LANG_TYPES.JP ? "先取" : TIE_BREAK_MODE.GET_FIRST}</SToggleButton>
+                    <SToggleButton value={TIE_BREAK_MODE.TWO_GAME_BEHIND}>{globalState.lang === LANG_TYPES.JP ? "アドバンテージ" : TIE_BREAK_MODE.TWO_GAME_BEHIND}</SToggleButton>
                 </ToggleButtonGroup>
             </SSettingsInnerDiv>
             <SSettingsInnerDiv>
-                <SParagraph>Deuce Mode</SParagraph>
+                <SParagraph>{globalState.lang === LANG_TYPES.JP ? "ゲーム取得モード" : "Game Get Mode"}</SParagraph>
                 <ToggleButtonGroup
                     color="primary"
                     size="small"
@@ -183,13 +186,13 @@ export const RuleSettings = () => {
                     exclusive
                     onChange={deuceModeChange}
                 >
-                    <SToggleButton value={DEUCE_MODE.DEUCE}>{DEUCE_MODE.DEUCE}</SToggleButton>
-                    <SToggleButton value={DEUCE_MODE.NO_AD}>{DEUCE_MODE.NO_AD}</SToggleButton>
-                    <SToggleButton value={DEUCE_MODE.SEMI_AD}>{DEUCE_MODE.SEMI_AD}</SToggleButton>
+                    <SToggleButton value={DEUCE_MODE.DEUCE}>{globalState.lang === LANG_TYPES.JP ? "デュース" : DEUCE_MODE.DEUCE}</SToggleButton>
+                    <SToggleButton value={DEUCE_MODE.NO_AD}>{globalState.lang === LANG_TYPES.JP ? "ノーアド" : DEUCE_MODE.NO_AD}</SToggleButton>
+                    <SToggleButton value={DEUCE_MODE.SEMI_AD}>{globalState.lang === LANG_TYPES.JP ? "セミアド" : DEUCE_MODE.SEMI_AD}</SToggleButton>
                 </ToggleButtonGroup>
             </SSettingsInnerDiv>
             <SSettingsInnerDiv>
-                <SParagraph>Number of Games</SParagraph>
+                <SParagraph>{globalState.lang === LANG_TYPES.JP ? "ゲーム数" : "Number of Games"}</SParagraph>
                 <SFormControl size="small">
                     <Select
                         id="numberOfGames"
@@ -212,7 +215,7 @@ export const RuleSettings = () => {
                 </SFormControl>
             </SSettingsInnerDiv>
             <SSettingsInnerDiv>
-                <SParagraph>Number of Tie Break Point</SParagraph>
+                <SParagraph>{globalState.lang === LANG_TYPES.JP ? "タイブレークポイント数" : "Number of Tie Break Point"}</SParagraph>
                 <SFormControl size="small">
                     <Select
                         id="NumberOfTieBreakPoint"

@@ -10,6 +10,8 @@ import { db } from "../common/db";
 import { GlobalStateContext } from "../providers/GlobalStateProvider";
 import { RuleSettingsContext } from "../providers/RuleSettingsProvider";
 import { DisplayTypeContext } from "../providers/DisplayTypeProvider";
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export const ResultCalc: React.VFC = () => {
   
@@ -57,7 +59,12 @@ export const ResultCalc: React.VFC = () => {
     },[]);
 
     return (
-        <p>Dialog</p>
+        <Backdrop
+            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={true}
+        >
+            <CircularProgress color="inherit" />
+        </Backdrop>
     )
 }
 

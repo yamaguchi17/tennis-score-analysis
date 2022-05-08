@@ -23,7 +23,7 @@ export class MySubClassedDexie extends Dexie {
 
     // DBの初期化
     this.version(1).stores({
-      globalState:'userId, isLoggedIn, isRecording, recodingMatchId, displayResultId',
+      globalState:'userId, isLoggedIn, isRecording, recodingMatchId, displayResultId, lang',
       ruleSettings:'userId, tieBreakMode, deuceMode, numberOfGames, numberOfTieBreakPoint, playerNameA, playerNameB, selectedServer',
       matchData:'++id, currentPointId, data',
       resultData:'id, data',

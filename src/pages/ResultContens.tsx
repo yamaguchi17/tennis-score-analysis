@@ -1,5 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useContext } from "react";
 import { ResultDataType, resultDataStatuType, resultDefaultDataGet} from '../common/AppTypes';
+import { WordsLang } from '../common/WordsLang';
+import { LANG_TYPES } from "../common/AppConst";
 import { db } from "../common/db";
 import { GlobalStateContext } from "../providers/GlobalStateProvider";
 import { format } from "date-fns";
@@ -39,18 +41,20 @@ export const ResultContens: React.VFC = () => {
                 </ul>
                 <p style={{display:'inline-block', width:'33%', textAlign:'center', fontSize:'1.2rem', fontWeight:'bold', color:'hsla(92, 78%, 46%, 1)'}}>{resultData.baseData.player2Name}</p>
             </div>
-            <p style={{textAlign:'center'}}>totalPoint: {resultData.baseData.totalPoint}</p>
-            <Statu resultData={resultData}/>
+            <p style={{textAlign:'center'}}>{globalState.lang === LANG_TYPES.JP ? "合計ポイント数：" : "totalPoint: "}{resultData.baseData.totalPoint}</p>
+            <Statu resultData={resultData} lang={globalState.lang}/>
             <pre>{JSON.stringify(resultData, null,  4)}</pre>
         </div>
     )
 }
 
 type Props = {
-    resultData: ResultDataType
+    resultData: ResultDataType,
+    lang: number,
 }
 
-const Statu: React.VFC<Props> = ({resultData})=> {
+const Statu: React.VFC<Props> = ({resultData, lang})=> {
+
     const contents = Object.entries(resultData.statuPlayer1).map(([ key, val1 ]) => {
         //player2側を設定
         const keyName: keyof resultDataStatuType = key as keyof resultDataStatuType;
@@ -80,14 +84,14 @@ const Statu: React.VFC<Props> = ({resultData})=> {
 
         return (
             <div key={key}>
-                <p style={{textAlign:'center', margin:'2rem 0 0.5rem 0'}}>{key}</p>
+                <p style={{textAlign:'center', margin:'2.5rem 0 0.5rem 0'}}>{WordsLang(lang,key)}</p>
                 <div style={{display:'flex'}}>
                     <SUl>
-                        <SLivalue key={key+"1value"}>{p1Display}</SLivalue>
+                        <SLiValue key={key+"1value"}>{p1Display}</SLiValue>
                         <SLiRate key={key+"1rate"} style={{maxWidth:val1.rate+'%',backgroundColor:'hsla(209, 78%, 46%, 1)', margin:'0 0 0 auto'}}>{val1.rate}</SLiRate>
                     </SUl>
                     <SUl>
-                        <SLivalue key={key+"2value"} style={{textAlign:'right'}}>{p2Display}</SLivalue>
+                        <SLiValue key={key+"2value"} style={{textAlign:'right'}}>{p2Display}</SLiValue>
                         <SLiRate key={key+"2rate"} style={{maxWidth:val1.rate+'%',backgroundColor:'hsla(92, 78%, 46%, 1)'}}>{val2.rate}</SLiRate>
                     </SUl>
                 </div>   
@@ -107,7 +111,7 @@ const SUl = styled.div`
     margin: 0;
 `;
 
-const SLivalue = styled.div`
+const SLiValue = styled.div`
     display: block;
     position: relative;
     top: -1.9rem;

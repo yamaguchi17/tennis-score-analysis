@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { ResultDataType, ResultBaseDataType, resultDefaultDataGet } from '../common/AppTypes';
-import { DISPLAY_TYPES } from "../common/AppConst";
+import { DISPLAY_TYPES, LANG_TYPES } from "../common/AppConst";
 import { db } from "../common/db";
 import { GlobalStateContext } from "../providers/GlobalStateProvider";
 import { DisplayTypeContext } from "../providers/DisplayTypeProvider";
@@ -15,6 +15,7 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
 export const DataManage: React.VFC = () => {
 
+  const { globalState, setGlobalState } = useContext(GlobalStateContext);
   const [resultDataArray, setResultDataArray] = useState<ResultDataType[]>([]);
 
   //DB読み込み
@@ -30,7 +31,7 @@ export const DataManage: React.VFC = () => {
   return (
     <div style={{ marginTop: '3rem', width: '22rem' }}>
       <Typography variant="h6" component="h2" style={{ display: 'inline-flex', alignItems: 'center', margin: '0 0 0 -0.5em' }}>
-        <AdminPanelSettingsIcon color={"primary"} />Data Manage
+        <AdminPanelSettingsIcon color={"primary"} />{globalState.lang === LANG_TYPES.JP ? "セーブデータ" : "Data Manage"}
       </Typography>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '1rem' }}>
         {resultDataArray.map((value, index) => {

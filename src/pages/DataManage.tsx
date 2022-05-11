@@ -70,7 +70,7 @@ const DataCard: React.VFC<Props> = ({ id, baseData }) => {
   }
 
   return (
-    <Card sx={{ width: '18rem', marginBottom: '1rem', backgroundColor: 'hsla(209, 100%, 97%, 1)' }}>
+    <Card sx={{ width: '18rem', marginBottom: '1rem', backgroundColor: 'hsl(209, 78%, 98%)' }}>
       <CardActionArea onClick={cardClick}>
         <CardContent>
           <Typography variant="body1" component="h3">

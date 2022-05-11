@@ -94,7 +94,7 @@ export const PointContents: React.VFC<Props> = ({currentPointID}) => {
                     onChange={stAction.shotTypeChange}
                     disabled={st.pointCategorySelectItem === "" || st.pointCategorySelectItem === null ? true : false}
                 >
-                    <CustomToggleButton value="Serve">{globalState.lang === LANG_TYPES.JP ? "サーブ" : "Serve"}</CustomToggleButton>
+                    <CustomToggleButton sx={{fontSize:'0.8em'}} value="Serve">{globalState.lang === LANG_TYPES.JP ? "サーブ" : "Serve"}</CustomToggleButton>
                     <CustomToggleButton value="Return">{globalState.lang === LANG_TYPES.JP ? "リターン" : "Return"}</CustomToggleButton>
                     <CustomToggleButton value="Stroke">{globalState.lang === LANG_TYPES.JP ? "ストローク" : "Stroke"}</CustomToggleButton>
                     <CustomToggleButton value="Volley">{globalState.lang === LANG_TYPES.JP ? "ボレー" : "Volley"}</CustomToggleButton>

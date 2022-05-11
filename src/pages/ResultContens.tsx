@@ -4,16 +4,19 @@ import { WordsLang } from '../common/WordsLang';
 import { LANG_TYPES } from "../common/AppConst";
 import { db } from "../common/db";
 import { GlobalStateContext } from "../providers/GlobalStateProvider";
+import { ResultEditDialog } from "../components/Result/ResultEditDialog";
 import { format } from "date-fns";
 import styled from '@emotion/styled'
 import Typography from '@mui/material/Typography';
-
 
 export const ResultContens: React.VFC = () => {
   
     //context
     const { globalState, setGlobalState } = useContext(GlobalStateContext);
     const [ resultData, setResultData ] = useState<ResultDataType>(resultDefaultDataGet());
+
+    //ResultEditDialogにて変更時に値を更新し,DB読み込みのuseLayoutEffectを再レンダリングさせる
+    const [ submitCount, setSubmitCount ] = useState(0);
     
     //DB読み込み
     useLayoutEffect(()=>{
@@ -21,7 +24,7 @@ export const ResultContens: React.VFC = () => {
         .then((rd)=>{
             if(rd !== undefined) setResultData(rd);
         });
-    },[]);
+    },[submitCount]);
 
     //スクロール位置をトップへ戻す
     useEffect(() => {
@@ -30,16 +33,19 @@ export const ResultContens: React.VFC = () => {
 
     return (
         <div style={{width:'22rem'}}>
+            <ResultEditDialog submitCount={submitCount} setSubmitCount={setSubmitCount} />
             <Typography style={{textAlign:'center', marginTop:'1rem'}} variant="h6" component="h2">{resultData.baseData.macthName}</Typography>
             <p style={{textAlign:'right'}}>{format(resultData.baseData.macthDate, 'yyyy-MM-dd')}</p>
             <div style={{display:'flex'}}>
-                <p style={{display:'inline-block', width:'33%', textAlign:'center', fontSize:'1.2rem',fontWeight:'bold', color:'hsla(209, 78%, 46%, 1)'}}>{resultData.baseData.player1Name}</p>
+                {/* <SPlayerName id="player1Name" label={globalState.lang === LANG_TYPES.JP ? "プレイヤー1 名前" : "Player1 Name"} variant="standard" sx={{color:'hsla(209, 78%, 46%, 1)'}} value={resultData.baseData.player1Name}/> */}
+                <SPlayerName style={{color:'hsla(209, 78%, 46%, 1)'}}>{resultData.baseData.player1Name}</SPlayerName>
                 <ul style={{textAlign:'center',padding:'1.2rem 0 1rem 0', margin:0, width:'33%'}}>
                     {resultData.baseData.gameCount.map((value,index)=>{
                         return <li key={"gameCount"+index} style={{listStyle:'none'}}>{value[0]} - {value[1]}</li>
                     })}
                 </ul>
-                <p style={{display:'inline-block', width:'33%', textAlign:'center', fontSize:'1.2rem', fontWeight:'bold', color:'hsla(92, 78%, 46%, 1)'}}>{resultData.baseData.player2Name}</p>
+                {/* <SPlayerName id="player2Name" label={globalState.lang === LANG_TYPES.JP ? "プレイヤー2 名前" : "Player2 Name"} variant="standard" sx={{color:'hsla(92, 78%, 46%, 1)'}} value={resultData.baseData.player2Name}/> */}
+                <SPlayerName style={{color:'hsla(92, 78%, 46%, 1)'}}>{resultData.baseData.player2Name}</SPlayerName>
             </div>
             <p style={{textAlign:'center'}}>{globalState.lang === LANG_TYPES.JP ? "合計ポイント数：" : "totalPoint: "}{resultData.baseData.totalPoint}</p>
             <Statu resultData={resultData} lang={globalState.lang}/>
@@ -47,6 +53,23 @@ export const ResultContens: React.VFC = () => {
         </div>
     )
 }
+
+// const SPlayerName = styled(TextField)({
+//     display:'inline-block', 
+//     width:'33%',
+//     textAlign:'center',
+//     fontSize:'1.2rem',
+//     fontWeight:'bold', 
+// });
+
+const SPlayerName = styled.p`
+    display: inline-block;
+    width: 33%;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+`;
+
 
 type Props = {
     resultData: ResultDataType,

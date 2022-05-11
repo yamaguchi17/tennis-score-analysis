@@ -22,7 +22,7 @@ export const RuleSettings = () => {
     const { globalState, setGlobalState } = useContext(GlobalStateContext);
 
     //stateのデフォルト値を取得
-    const ruleSetDefaultData:globalRuleSetType = ruleSetDefaultDataGet();
+    let ruleSetDefaultData:globalRuleSetType = ruleSetDefaultDataGet();
 
     //ruleSettings State
     const [ tieBreakMode, setTieBreakMode] = useState(ruleSettings.tieBreakMode);
@@ -38,6 +38,12 @@ export const RuleSettings = () => {
         db.ruleSettings.get({userId: "0"})
             .then((rs)=>{
                 if(rs === undefined){
+                    if(globalState.lang === LANG_TYPES.JP){
+                        ruleSetDefaultData.playerNameA = "プレイヤーA";
+                        ruleSetDefaultData.playerNameB = "プレイヤーB";
+                        setPlayerNameA(ruleSetDefaultData.playerNameA);
+                        setPlayerNameB(ruleSetDefaultData.playerNameB);
+                      }
                     db.ruleSettings.add(ruleSetDefaultData);
                 }else {
                     const newState:ruleSetType = {
@@ -143,7 +149,7 @@ export const RuleSettings = () => {
             <SSettingsInnerDiv>
                 <SParagraph>{globalState.lang === LANG_TYPES.JP ? "プレイヤー名／サーバー" : "Player Name / Server"}</SParagraph>
                 <div style={{display:"flex"}}>
-                    <STextField id="playerNameA" label="Player1 Name" value={playerNameA} variant="outlined" onChange={playerNameAChange} size="small"  inputProps={{ maxLength: 20}}/>
+                    <STextField id="playerNameA" label={globalState.lang === LANG_TYPES.JP ? "プレイヤー1 名前" : "Player1 Name"} value={playerNameA} variant="outlined" onChange={playerNameAChange} size="small"  inputProps={{ maxLength: 20}}/>
                     <Radio
                         checked={selectedServer === 'player1'}
                         onChange={selectedServerChange}
@@ -153,7 +159,7 @@ export const RuleSettings = () => {
                     />
                 </div>
                 <div style={{display:"flex"}}>
-                    <STextField id="playerNameB" label="Player2 Name" value={playerNameB} variant="outlined" onChange={playerNameBChange} size="small" inputProps={{ maxLength: 20}}/>
+                    <STextField id="playerNameB" label={globalState.lang === LANG_TYPES.JP ? "プレイヤー2 名前" : "Player2 Name"} value={playerNameB} variant="outlined" onChange={playerNameBChange} size="small" inputProps={{ maxLength: 20}}/>
                     <Radio
                         checked={selectedServer === 'player2'}
                         onChange={selectedServerChange}

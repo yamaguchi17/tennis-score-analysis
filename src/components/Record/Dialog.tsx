@@ -1,3 +1,6 @@
+import { useState, useContext } from "react";
+import { LANG_TYPES } from "../../common/AppConst";
+import { GlobalStateContext } from "../../providers/GlobalStateProvider";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -14,6 +17,7 @@ export type DisplayResultDialogProps = {
 }
 
 export const DisplayResultDialog :React.VFC<DisplayResultDialogProps> = (props) => {
+      
     const { onClose, selectedValue, open, finishesFinalSet } = props;
 
     const handleClose = () => {
@@ -24,23 +28,27 @@ export const DisplayResultDialog :React.VFC<DisplayResultDialogProps> = (props) 
         onClose(value);
     };
 
+    const { globalState, setGlobalState } = useContext(GlobalStateContext);
+
+    const nextStr = globalState.lang === LANG_TYPES.JP ? "次のセット" : "Next Set";
+    const Result = globalState.lang === LANG_TYPES.JP ? "結果表示" : "Result";
+
     return (
         <Dialog onClose={finishesFinalSet? ()=>{} : handleClose} open={open}>
-            {/* <DialogTitle>Set backup account</DialogTitle> */}
             <List sx={{ width: "15rem" }}>
                 {!finishesFinalSet &&
                 <ListItem button onClick={() => handleListItemClick("Next")} key="Next">
                     <ListItemIcon>
                         <ArrowCircleRightIcon color="primary" />
                     </ListItemIcon>
-                    <ListItemText primary="Next Set" />
+                    <ListItemText primary={nextStr} />
                 </ListItem>
                 }
                 <ListItem autoFocus button onClick={() => handleListItemClick('Result')} key="Result">
                     <ListItemIcon>
                         <CheckCircleIcon color="primary" />
                     </ListItemIcon>
-                    <ListItemText primary="Result" />
+                    <ListItemText primary={Result} />
                 </ListItem>
             </List>
         </Dialog>

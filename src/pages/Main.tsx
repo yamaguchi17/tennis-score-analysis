@@ -61,11 +61,14 @@ const SNewGameBox = styled(Box)({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'hsl(209, 78%, 95%)',
-    width: '100%',
+    backgroundColor: 'hsl(209, 78%, 97%)',
     maxWidth: '28rem',
-    height: '6rem',
+    height: '7rem',
     marginTop: '1rem',
+    borderRadius: '8px',
+    boxShadow: 'rgb(0 0 0 / 13%) 0px 1.6px 3.6px 0px, rgb(0 0 0 / 11%) 0px 0.3px 0.9px 0px',
+    width: '23rem',
+
 });
 const SNewGameButton = styled(Button)({
     display: 'block',

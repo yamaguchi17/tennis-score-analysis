@@ -27,8 +27,7 @@ export const SaveData: React.VFC = () => {
   }, []);
 
   return (
-    <div style={{ marginTop: '3rem', width: '22rem' }}>
-
+    <div style={{ marginTop: '3rem', width: '22rem'}}>
       <Typography variant="h6" component="h2" style={{ display: 'inline-flex', alignItems: 'center', margin: '0 0 0 -0.5em' }}>
         <SaveIcon color={"primary"} />{globalState.lang === LANG_TYPES.JP ? "セーブデータ" : "Save Data"}
       </Typography>

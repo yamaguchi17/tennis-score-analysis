@@ -17,6 +17,8 @@ import { db } from "./common/db";
 import { PointType, pointDefaultData, globalStateType, globalStateDefaultDataGet } from './common/AppTypes';
 import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@mui/material/Backdrop';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from './common/theme';
 
 export const App: FC = () => {
 
@@ -126,7 +128,7 @@ export const App: FC = () => {
   };
 
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
       <Header />
       {/* <Button onClick={handleClick} variant="outlined" sx={{ marginRight: '1rem' }}>Home ⇔ Record</Button>
@@ -138,7 +140,7 @@ export const App: FC = () => {
       <SContainer maxWidth="sm">
         <DisplayTypeExport />
       </SContainer>
-    </>
+    </ThemeProvider>
   );
 }
 

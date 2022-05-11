@@ -143,8 +143,8 @@ export const RuleSettings = () => {
     };  
 
     return (
-        <Box sx={{ width: '22rem', display: 'flex', flexDirection: 'column' }}>
-            <Typography variant="h6" component="h2" style={{ display: 'inline-flex', alignItems: 'center', margin: '1.5em 0 0.5em -0.5em' }}>
+        <Box sx={{ width: '22rem', display: 'flex', flexDirection: 'column', marginTop:'1rem'}}>
+            <Typography variant="h6" component="h2" style={{ display: 'inline-flex', alignItems: 'center', margin: '0.5em 0 0.5em -0.5em' }}>
                 <SettingsIcon color={"primary"} />{globalState.lang === LANG_TYPES.JP ? "ルール設定" : "Settings"}</Typography>
             <SSettingsInnerDiv>
                 <SParagraph>{globalState.lang === LANG_TYPES.JP ? "プレイヤー名／サーバー" : "Player Name / Server"}</SParagraph>

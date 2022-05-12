@@ -89,7 +89,7 @@ function EditDialog(props: EditDialogProps) {
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle>試合データ編集</DialogTitle>
       <Container style={{display:'flex', flexDirection:'column', gap:'1.5rem' ,margin:'1.0rem 0 1.5rem 0', padding:'0 1.5rem'}}>
-        <TextField id="matchName" label="試合名" variant="outlined" size="small" value={macthName} onChange={matchNameChange}/>
+        <TextField id="matchName" label="試合名" variant="outlined" size="small" value={macthName} onChange={matchNameChange} inputProps={{ maxLength: 20}}/>
         <LocalizationProvider dateAdapter={AdapterDateFns} locale={ja} >
             <MobileDatePicker
               value={macthDate}
@@ -105,8 +105,8 @@ function EditDialog(props: EditDialogProps) {
               DialogProps={{ sx: styles.mobiledialogprops }}
             />
         </LocalizationProvider>        
-        <TextField id="player1Name" label="プレイヤー1 名前" variant="outlined" size="small" value={player1Name} onChange={player1NameChange}/>
-        <TextField id="player2Name" label="プレイヤー2 名前" variant="outlined" size="small" value={player2Name} onChange={player2NameChange}/>
+        <TextField id="player1Name" label="プレイヤー1 名前" variant="outlined" size="small" value={player1Name} onChange={player1NameChange} inputProps={{ maxLength: 20}}/>
+        <TextField id="player2Name" label="プレイヤー2 名前" variant="outlined" size="small" value={player2Name} onChange={player2NameChange} inputProps={{ maxLength: 20}}/>
         <Button style={{margin:'0 auto', width:"6rem"}} size="small" variant="outlined" onClick={submit}>変更</Button>
       </Container>
     </Dialog>

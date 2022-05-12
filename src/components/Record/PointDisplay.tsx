@@ -173,8 +173,8 @@ export const PointDisplay: React.VFC<Props> = ({currentPointID, setPointID}) => 
                     <SPointDisplay>{pointData.point.pointCountB}</SPointDisplay>
                     {pointData.point.serverSide === 'player2' && <SPointDisplayServer></SPointDisplayServer>}
                 </SPointDisplayArea>
-                <SMovePointButtonArea>
-                    <IconButton aria-label="nextPoint" onClick={onClickPointIDAdd} disabled={!canMovePoint} sx={{ padding: 0 }}>
+                <SMovePointButtonArea style={{justifyContent: 'flex-end'}}>
+                    <IconButton aria-label="nextPoint" onClick={onClickPointIDAdd} disabled={!canMovePoint} sx={{ padding: 0}}>
                         <ChevronRightSharpIcon  htmlColor={canMovePoint?"white":"primary"} sx={{ fontSize: "3.5rem", margin: "-1.25rem" }} />
                     </IconButton>
                 </SMovePointButtonArea>

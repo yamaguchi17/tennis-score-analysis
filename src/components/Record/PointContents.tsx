@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { usePointContentsSelect } from "../../fooks/usePointContentsSelect";
 import { GlobalStateContext } from "../../providers/GlobalStateProvider";
 import { LANG_TYPES } from "../../common/AppConst";
+import { RecordReset } from "./RecordReset";
 import styled from '@emotion/styled'
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
@@ -140,6 +141,7 @@ export const PointContents: React.VFC<Props> = ({currentPointID}) => {
                     <CustomToggleButton value="Lob">{globalState.lang === LANG_TYPES.JP ? "ロブ" : "Lob"}</CustomToggleButton>
                     <CustomToggleButton value="Drop">{globalState.lang === LANG_TYPES.JP ? "ドロップ" : "Drop"}</CustomToggleButton>
                 </ToggleButtonGroup>
+                <RecordReset />
             </SOuterArea>
         </>
     );

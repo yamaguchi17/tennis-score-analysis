@@ -11,7 +11,7 @@ type Props = {
     setCallState: React.Dispatch<React.SetStateAction<boolean>>,
     titleText:string,
     callback: () => void,
-    children: React.ReactNode,
+    children?: React.ReactNode,
 }
 
 export const DialogAlert: React.VFC<Props> = (props) => {

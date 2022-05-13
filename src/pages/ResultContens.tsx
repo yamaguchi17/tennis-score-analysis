@@ -115,7 +115,7 @@ const Statu: React.VFC<Props> = ({resultData, lang})=> {
                     </SUl>
                     <SUl>
                         <SLiValue key={key+"2value"} style={{textAlign:'right'}}>{p2Display}</SLiValue>
-                        <SLiRate key={key+"2rate"} style={{maxWidth:val1.rate+'%',backgroundColor:'hsla(92, 78%, 46%, 1)'}}>{val2.rate}</SLiRate>
+                        <SLiRate key={key+"2rate"} style={{maxWidth:val2.rate+'%',backgroundColor:'hsla(92, 78%, 46%, 1)'}}>{val2.rate}</SLiRate>
                     </SUl>
                 </div>   
             </div>

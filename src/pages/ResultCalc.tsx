@@ -12,6 +12,7 @@ import { RuleSettingsContext } from "../providers/RuleSettingsProvider";
 import { DisplayTypeContext } from "../providers/DisplayTypeProvider";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import { ResetTvRounded } from "@mui/icons-material";
 
 export const ResultCalc: React.VFC = () => {
   
@@ -96,6 +97,9 @@ function statuCount(md: MatchDataType, rd: ResultDataType):void {
     //各評価項目のカウント処理
     md.data.map((val,key ) => {
 
+        //最後の要素は飛ばす（6-4で結果表示した際には[6-4, 0-0]と次のset(game)の要素が入るため
+        if(key === md.data.length -1 ) return;
+
         // pointWon
         if(val.pointCategory === 'Winner' || val.pointCategory === 'NiceShot'){
             val.pointGetSide === 'sideA' ? rd.statuPlayer1.pointWon.value++ : rd.statuPlayer2.pointWon.value++;
@@ -110,12 +114,14 @@ function statuCount(md: MatchDataType, rd: ResultDataType):void {
         }
         // nieceShot
         if(val.pointCategory === 'NiceShot'){
-            val.pointGetSide === 'sideA' ? rd.statuPlayer1.pointWon.value++ : rd.statuPlayer2.pointWon.value++;
+            val.pointGetSide === 'sideA' ? rd.statuPlayer1.nieceShot.value++ : rd.statuPlayer2.nieceShot.value++;
         }
         // totalPointWon
         val.pointGetSide === 'sideA' ? rd.statuPlayer1.totalPointWon.value++ : rd.statuPlayer2.totalPointWon.value++;
         // serveCount
-        val.point.serverSide === 'player1' ? rd.statuPlayer1.serveCount.value++ : rd.statuPlayer2.serveCount.value++;
+        if(val.serve === '1st' || val.serve === '2nd' || val.serve === 'Double Fault'){
+            val.point.serverSide === 'player1' ? rd.statuPlayer1.serveCount.value++ : rd.statuPlayer2.serveCount.value++;
+        }
         // serviceAce
         if(val.pointCategory === 'Winner' && val.shotType === 'Serve'){
             val.point.serverSide === 'player1' ? rd.statuPlayer1.serviceAce.value++ : rd.statuPlayer2.serviceAce.value++;
@@ -311,27 +317,27 @@ function statuCount(md: MatchDataType, rd: ResultDataType):void {
             val.pointGetSide === 'sideA' ? rd.statuPlayer2.flatError.value++ : rd.statuPlayer1.flatError.value++;
         }
         // crossWon
-        if(val.shotSpinType === 'Cross' && (val.pointCategory === 'Winner' || val.pointCategory === 'NiceShot')){
+        if(val.shotDetailCource === 'Cross' && (val.pointCategory === 'Winner' || val.pointCategory === 'NiceShot')){
             val.pointGetSide === 'sideA' ? rd.statuPlayer1.crossWon.value++ : rd.statuPlayer2.crossWon.value++;
         }
         // crossError
-        if(val.shotSpinType === 'Cross' && val.pointCategory === 'Error'){
+        if(val.shotDetailCource === 'Cross' && val.pointCategory === 'Error'){
             val.pointGetSide === 'sideA' ? rd.statuPlayer2.crossError.value++ : rd.statuPlayer1.crossError.value++;
         }
         // straightWon
-        if(val.shotSpinType === 'Straight' && (val.pointCategory === 'Winner' || val.pointCategory === 'NiceShot')){
+        if(val.shotDetailCource === 'Straight' && (val.pointCategory === 'Winner' || val.pointCategory === 'NiceShot')){
             val.pointGetSide === 'sideA' ? rd.statuPlayer1.straightWon.value++ : rd.statuPlayer2.straightWon.value++;
         }
         // straightError
-        if(val.shotSpinType === 'Straight' && val.pointCategory === 'Error'){
+        if(val.shotDetailCource === 'Straight' && val.pointCategory === 'Error'){
             val.pointGetSide === 'sideA' ? rd.statuPlayer2.straightError.value++ : rd.statuPlayer1.straightError.value++;
         }
         // centerWon
-        if(val.shotSpinType === 'Center' && (val.pointCategory === 'Winner' || val.pointCategory === 'NiceShot')){
+        if(val.shotDetailCource === 'Center' && (val.pointCategory === 'Winner' || val.pointCategory === 'NiceShot')){
             val.pointGetSide === 'sideA' ? rd.statuPlayer1.centerWon.value++ : rd.statuPlayer2.centerWon.value++;
         }
         // centerError
-        if(val.shotSpinType === 'Center' && val.pointCategory === 'Error'){
+        if(val.shotDetailCource === 'Center' && val.pointCategory === 'Error'){
             val.pointGetSide === 'sideA' ? rd.statuPlayer2.centerError.value++ : rd.statuPlayer1.centerError.value++;
         }
     }); 

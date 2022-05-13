@@ -7,18 +7,17 @@ import { DataManage } from "./pages/DataManage";
 import { DisplayTypeContext } from "./providers/DisplayTypeProvider";
 import { GlobalStateContext } from "./providers/GlobalStateProvider";
 import { DISPLAY_TYPES } from "./common/AppConst";
-import { TestArea } from "./components/TextArea";
 import { Header } from "./components/Header"
-import CssBaseline from '@mui/material/CssBaseline';
-import { Button } from "@mui/material";
-import Container from '@mui/material/Container';
-import styled from '@emotion/styled';
 import { db } from "./common/db";
 import { PointType, pointDefaultData, globalStateType, globalStateDefaultDataGet } from './common/AppTypes';
+import theme from './common/theme';
+import { sampleResultData } from "./components/Result/SampleResultData";
+import CssBaseline from '@mui/material/CssBaseline';
+import Container from '@mui/material/Container';
+import styled from '@emotion/styled';
 import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@mui/material/Backdrop';
 import { ThemeProvider } from '@mui/material/styles';
-import theme from './common/theme';
 
 export const App: FC = () => {
 
@@ -82,6 +81,8 @@ export const App: FC = () => {
             displayResultId: globalStateDefaultData.displayResultId,
             lang: globalStateDefaultData.lang,
           });
+          //Resultテーブルにサンプルデータを追加
+          db.resultData.put(sampleResultData);
         }
         //globalStateテーブルにレコードが存在すれば、Contextに反映
         else {

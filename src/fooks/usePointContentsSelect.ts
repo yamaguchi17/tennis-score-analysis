@@ -119,7 +119,7 @@ export const usePointContentsSelect = (currentPointID:number) => {
         newShotSpinTypeSelectItem: string,
     ) => {
         setShotSpinTypeItem(newShotSpinTypeSelectItem);
-        matchDataDBupdate("serveCoushotSpinTyperce",newShotSpinTypeSelectItem,globalState.recodingMatchId);     
+        matchDataDBupdate("shotSpinType",newShotSpinTypeSelectItem,globalState.recodingMatchId);     
     };
 
     //Shot Detailボタン押下処理

@@ -42,13 +42,13 @@ export const RecordReset = () => {
                 onClick={handleClickOpen}
                 variant="outlined"
                 color="error" 
-                style={{width: '11rem', margin: '3rem 0rem 0rem 3rem'}}
-            >入力内容をリセット
+                style={{width: '13rem', margin: '3rem 0rem 0rem 3rem'}}
+            >全ての入力内容をリセット
             </Button>
             <DialogAlert
                 callState={callState}
                 setCallState={setCallState}
-                titleText="入力内容をリセットしますか？"
+                titleText="全ての入力内容をリセットしますか？"
                 callback={resetClick}
             >
             </DialogAlert>

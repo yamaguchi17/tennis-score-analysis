@@ -98,6 +98,9 @@ export const PointDisplay: React.VFC<Props> = ({currentPointID, setPointID}) => 
 
         //次へボタンの制御　ポイント取得サイドを選択状態でなければ移行できない
         (nextPointElement.pointGetSide === null || nextPointElement.pointGetSide === "") ? setCanMovePoint(false) : setCanMovePoint(true);
+
+        //スクロール位置をトップへ戻す
+        window.scrollTo(0, 0);
     };
 
     //-ボタン

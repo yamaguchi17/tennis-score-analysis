@@ -107,16 +107,16 @@ export const WordsLang = (lang:number, name:string):string => {
             lang === LANG_TYPES.JP ? str = "サーブコース：バック" : str = "Serve Cource Back";
             break;    
         case "serveTypeFlat":
-            lang === LANG_TYPES.JP ? str = "サーブ球種：フラット" : str = "Serve Type Flat";
+            lang === LANG_TYPES.JP ? str = "サーブ：フラット" : str = "Serve Type Flat";
             break;
         case "serveTypeSlice":
-            lang === LANG_TYPES.JP ? str = "サーブ球種：スライス" : str = "Serve Type Slice";
+            lang === LANG_TYPES.JP ? str = "サーブ：スライス" : str = "Serve Type Slice";
             break;
         case "serveTypeSpin":
-            lang === LANG_TYPES.JP ? str = "サーブ球種：スピン" : str = "Serve Type Spin";
+            lang === LANG_TYPES.JP ? str = "サーブ：スピン" : str = "Serve Type Spin";
             break;
         case "serveTypeTopSlice":
-            lang === LANG_TYPES.JP ? str = "サーブ球種：トップスライス" : str = "Serve Type TopSlice";
+            lang === LANG_TYPES.JP ? str = "サーブ:トップスライス" : str = "Serve Type TopSlice";
             break;
         //ファア・バック
         case "foreReturnWon":

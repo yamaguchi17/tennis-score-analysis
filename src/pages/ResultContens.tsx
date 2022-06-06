@@ -37,30 +37,20 @@ export const ResultContens: React.VFC = () => {
             <Typography style={{textAlign:'center', marginTop:'1rem'}} variant="h6" component="h2">{resultData.baseData.macthName}</Typography>
             <p style={{textAlign:'right'}}>{format(resultData.baseData.macthDate, 'yyyy-MM-dd')}</p>
             <div style={{display:'flex'}}>
-                {/* <SPlayerName id="player1Name" label={globalState.lang === LANG_TYPES.JP ? "プレイヤー1 名前" : "Player1 Name"} variant="standard" sx={{color:'hsla(209, 78%, 46%, 1)'}} value={resultData.baseData.player1Name}/> */}
                 <SPlayerName style={{color:'hsla(209, 78%, 46%, 1)'}}>{resultData.baseData.player1Name}</SPlayerName>
                 <ul style={{textAlign:'center',padding:'1.2rem 0 1rem 0', margin:0, width:'33%'}}>
                     {resultData.baseData.gameCount.map((value,index)=>{
                         return <li key={"gameCount"+index} style={{listStyle:'none'}}>{value[0]} - {value[1]}</li>
                     })}
                 </ul>
-                {/* <SPlayerName id="player2Name" label={globalState.lang === LANG_TYPES.JP ? "プレイヤー2 名前" : "Player2 Name"} variant="standard" sx={{color:'hsla(92, 78%, 46%, 1)'}} value={resultData.baseData.player2Name}/> */}
                 <SPlayerName style={{color:'hsla(92, 78%, 46%, 1)'}}>{resultData.baseData.player2Name}</SPlayerName>
             </div>
             <p style={{textAlign:'center'}}>{globalState.lang === LANG_TYPES.JP ? "合計ポイント数：" : "totalPoint: "}{resultData.baseData.totalPoint}</p>
             <Statu resultData={resultData} lang={globalState.lang}/>
-            <pre>{JSON.stringify(resultData, null,  4)}</pre>
+            {/* <pre>{JSON.stringify(resultData, null,  4)}</pre> */}
         </div>
     )
 }
-
-// const SPlayerName = styled(TextField)({
-//     display:'inline-block', 
-//     width:'33%',
-//     textAlign:'center',
-//     fontSize:'1.2rem',
-//     fontWeight:'bold', 
-// });
 
 const SPlayerName = styled.p`
     display: inline-block;
